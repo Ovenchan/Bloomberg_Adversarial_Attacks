@@ -1,0 +1,12 @@
+metric,value
+accuracy,0.870000
+roc_auc,0.952375
+tpr_at_1_percent_fpr,0.670000
+tpr_at_5_percent_fpr,0.785000
+clean_correctly_detected,177
+clean_total,200
+pgd_correctly_detected,171
+pgd_total,200
+train_source_images,800
+test_source_images,200
+feature_dimensions,196

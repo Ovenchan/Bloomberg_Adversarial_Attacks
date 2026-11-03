@@ -1,0 +1,50 @@
+{
+    "experiment": "08b_corrected_pipeline_audit",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "num_attack_images": 1000,
+    "classifier_protocol": {
+        "training_split": "official_cifar10_train",
+        "evaluation_split": "official_cifar10_test",
+        "train_samples": 50000,
+        "test_samples": 10000,
+        "official_train_test_protocol_valid": true,
+        "classifier_training_attack_overlap": 0
+    },
+    "detector_split": {
+        "train_image_ids": 800,
+        "test_image_ids": 200,
+        "train_test_intersection": 0
+    },
+    "embedding_identity": {
+        "max_clean_difference": 0.0,
+        "mean_clean_difference": 0.0,
+        "exact_identity": true
+    },
+    "duplicates": {
+        "clean_train_test": 0,
+        "pgd_train_test": 0,
+        "any_detector_train_test": 0
+    },
+    "saved_detector": {
+        "accuracy": 1.0,
+        "roc_auc": 1.0,
+        "confusion_matrix": [
+            [
+                200,
+                0
+            ],
+            [
+                0,
+                200
+            ]
+        ],
+        "max_clean_score": 0.1028890535235405,
+        "min_pgd_score": 0.500292181968689,
+        "perfect_score_separation": true
+    },
+    "shuffled_label_control": {
+        "accuracy": 0.495,
+        "roc_auc": 0.5133
+    }
+}

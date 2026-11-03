@@ -1,0 +1,49 @@
+{
+    "experiment": "11c_evaluate_pgd_detector_on_patch",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "detector_training_attack": "pgd",
+    "evaluation_attack": "localized_patch",
+    "evaluation_attack_type": "per_image_optimized_patch",
+    "source_split": "official_cifar10_test",
+    "classifier_training_split": "official_cifar10_train",
+    "classifier_evaluation_split": "official_cifar10_test",
+    "num_available_image_pairs": 1000,
+    "detector_training_image_pairs": 800,
+    "detector_heldout_image_pairs": 200,
+    "num_evaluation_embeddings": 400,
+    "detector_train_test_intersection": 0,
+    "accuracy": 0.98,
+    "roc_auc": 0.9979,
+    "clean_precision": 0.9615384615384616,
+    "clean_recall": 1.0,
+    "clean_f1": 0.9803921568627451,
+    "patch_precision": 1.0,
+    "patch_recall": 0.96,
+    "patch_f1": 0.9795918367346939,
+    "confusion_matrix": [
+        [
+            200,
+            0
+        ],
+        [
+            8,
+            192
+        ]
+    ],
+    "max_clean_score": 0.10005489058062653,
+    "min_patch_score": 0.00047865890621638646,
+    "perfect_score_separation": false,
+    "heldout_originally_correct": 194,
+    "heldout_successful_patch_attacks": 189,
+    "heldout_patch_attack_success_rate": 0.9742268041237113,
+    "successful_patch_detection_rate": 0.9841269841269841,
+    "successful_patch_mean_detector_score": 0.9643837960317232,
+    "successful_patch_median_detector_score": 0.9982494291075209,
+    "patch_size": 48,
+    "image_size": 224,
+    "patch_area_ratio": 0.04591836734693878,
+    "steps": 100,
+    "learning_rate": 0.05,
+    "seed": 42
+}

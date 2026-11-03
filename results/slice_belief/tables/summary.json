@@ -1,0 +1,19 @@
+{
+  "clean_accuracy": {
+    "train": 0.91,
+    "dev": 0.95,
+    "cal": 0.925,
+    "test": 0.9033333333333333
+  },
+  "clean_counts": {
+    "train": 300,
+    "dev": 100,
+    "cal": 200,
+    "test": 300
+  },
+  "sigma": {
+    "0.3": 3,
+    "0.4": 47
+  },
+  "sigma_value": 0.4
+}

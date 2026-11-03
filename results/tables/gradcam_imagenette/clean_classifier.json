@@ -1,0 +1,79 @@
+{
+  "clean_accuracy": 0.881,
+  "num_correct": 881,
+  "num_samples": 1000,
+  "num_source_images": 1000,
+  "config": {
+    "seed": 42,
+    "device": "auto",
+    "dataset": {
+      "name": "imagenette",
+      "root": "data/raw",
+      "image_size": 224,
+      "resize_size": 232,
+      "size": "full",
+      "download": false,
+      "batch_size": 20,
+      "num_workers": 0,
+      "num_samples": 1000
+    },
+    "model": {
+      "weights": "IMAGENET1K_V2",
+      "target_layer": "layer4.2"
+    },
+    "gradcam": {
+      "grid_size": 14
+    },
+    "detector": {
+      "C": 1.0,
+      "max_iter": 5000
+    },
+    "evaluation": {
+      "folds": 5,
+      "min_correct_per_fold": 10
+    },
+    "attacks": {
+      "pgd": {
+        "epsilon": 0.03137254901960784,
+        "alpha": 0.00784313725490196,
+        "steps": 20,
+        "random_start": true
+      },
+      "fgsm": {
+        "eps": 0.03137254901960784
+      },
+      "apgd": {
+        "norm": "Linf",
+        "eps": 0.03137254901960784,
+        "steps": 20,
+        "n_restarts": 1,
+        "seed": 42,
+        "loss": "ce",
+        "eot_iter": 1,
+        "rho": 0.75,
+        "verbose": false
+      },
+      "cw": {
+        "c": 1.0,
+        "kappa": 0.0,
+        "steps": 100,
+        "lr": 0.01
+      },
+      "patch": {
+        "patch_size": 50,
+        "steps": 100,
+        "learning_rate": 0.05
+      }
+    },
+    "features_path": "data/processed/gradcam/imagenette_features.npz",
+    "results_dir": "results/tables/gradcam_imagenette"
+  },
+  "correct_sources_per_fold": [
+    179,
+    175,
+    176,
+    172,
+    179
+  ],
+  "sufficient_clean_samples": true
+}

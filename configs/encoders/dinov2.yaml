@@ -1,0 +1,5 @@
+name: dinov2_vits14
+pretrained: true
+device: auto
+
+embedding_type: cls

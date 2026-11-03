@@ -1,0 +1,214 @@
+[14:55:09] === stage manifest ===
+[14:55:10] manifest: {'train': 300, 'dev': 100, 'cal': 200, 'test': 300, 'reserve': 3025}
+[14:55:10] === stage corpus ===
+[14:55:18] train: clean accuracy 0.9100 (273/300)
+[14:56:17] train/pgd: generated in 59s
+[14:56:19] train/pgd: ASR 273/273 = 1.0000
+[14:57:25] train/apgd: generated in 66s
+[14:57:27] train/apgd: ASR 273/273 = 1.0000
+[14:59:35] train/cw: generated in 128s
+[14:59:37] train/cw: ASR 272/273 = 0.9963
+[15:04:37] train/patch: generated in 300s
+[15:04:39] train/patch: ASR 169/273 = 0.6190
+[15:04:40] dev: clean accuracy 0.9500 (95/100)
+[15:04:59] dev/pgd: generated in 19s
+[15:04:59] dev/pgd: ASR 95/95 = 1.0000
+[15:05:19] dev/apgd: generated in 20s
+[15:05:20] dev/apgd: ASR 95/95 = 1.0000
+[15:05:58] dev/cw: generated in 38s
+[15:05:58] dev/cw: ASR 95/95 = 1.0000
+[15:07:37] dev/patch: generated in 99s
+[15:07:37] dev/patch: ASR 62/95 = 0.6526
+[15:07:39] cal: clean accuracy 0.9250 (185/200)
+[15:07:42] test: clean accuracy 0.9033 (271/300)
+[15:08:39] test/pgd: generated in 57s
+[15:08:41] test/pgd: ASR 271/271 = 1.0000
+[15:09:39] test/apgd: generated in 58s
+[15:09:41] test/apgd: ASR 271/271 = 1.0000
+[15:12:01] test/cw: generated in 140s
+[15:12:03] test/cw: ASR 270/271 = 0.9963
+[15:17:03] test/patch: generated in 300s
+[15:17:05] test/patch: ASR 168/271 = 0.6199
+[15:17:08] test/fgsm: generated in 3s
+[15:17:09] test/fgsm: ASR 83/271 = 0.3063
+[15:17:10] test/gauss2: prediction changed on 0.020
+[15:17:11] test/gauss4: prediction changed on 0.020
+[15:17:12] test/gauss8: prediction changed on 0.050
+[15:17:12] test/unif8: prediction changed on 0.030
+[15:17:12] === stage segment ===
+[15:17:58] segment train/clean: 300 inputs, K median 23 [14-34], 1.56s/input
+[15:18:26] segment train/pgd: 273 inputs, K median 25 [17-36], 1.46s/input
+[15:18:36] segment dev/clean: 100 inputs, K median 23 [15-34], 1.30s/input
+[15:18:46] segment dev/pgd: 95 inputs, K median 25 [16-38], 1.39s/input
+[15:19:07] segment cal/clean: 200 inputs, K median 23 [13-35], 1.49s/input
+[15:19:36] segment test/clean: 300 inputs, K median 23 [13-45], 1.41s/input
+[15:20:02] segment test/pgd: 271 inputs, K median 25 [16-43], 1.43s/input
+[15:20:29] segment test/apgd: 271 inputs, K median 25 [15-43], 1.44s/input
+[15:20:55] segment test/cw: 270 inputs, K median 23 [13-45], 1.40s/input
+[15:21:11] segment test/patch: 168 inputs, K median 23 [14-42], 1.36s/input
+[15:21:20] segment test/fgsm: 83 inputs, K median 25 [15-34], 1.30s/input
+[15:21:30] segment test/gauss2: 100 inputs, K median 24 [12-31], 1.27s/input
+[15:21:40] segment test/gauss4: 100 inputs, K median 25 [14-33], 1.30s/input
+[15:21:51] segment test/gauss8: 100 inputs, K median 25 [17-35], 1.32s/input
+[15:22:01] segment test/unif8: 100 inputs, K median 25 [14-36], 1.31s/input
+[15:22:11] segment dev/apgd: 95 inputs, K median 25 [16-38], 1.30s/input
+[15:22:20] segment dev/cw: 95 inputs, K median 23 [14-35], 1.28s/input
+[15:22:26] segment dev/patch: 62 inputs, K median 23 [14-31], 1.38s/input
+[15:22:53] segment train/apgd: 273 inputs, K median 25 [17-38], 1.42s/input
+[15:23:19] segment train/cw: 272 inputs, K median 23 [14-34], 1.41s/input
+[15:23:36] segment train/patch: 169 inputs, K median 23 [14-34], 1.39s/input
+[15:23:36] === stage sigma ===
+[15:28:26] sigma policy: 0.4 from {0.4: 47, 0.3: 3}
+[15:28:26] === stage explain ===
+[15:31:30] explain train/clean: 20/300 | 9.2s/input | ETA 9.41h
+[15:34:40] explain train/clean: 40/300 | 9.4s/input | ETA 9.50h
+[15:36:34] explain train/clean: 60/300 | 8.1s/input | ETA 8.22h
+[15:38:04] explain train/clean: 80/300 | 7.2s/input | ETA 7.26h
+[15:39:43] explain train/clean: 100/300 | 6.8s/input | ETA 6.76h
+[15:41:18] explain train/clean: 120/300 | 6.4s/input | ETA 6.40h
+[15:43:09] explain train/clean: 140/300 | 6.3s/input | ETA 6.23h
+[15:44:46] explain train/clean: 160/300 | 6.1s/input | ETA 6.02h
+[15:46:29] explain train/clean: 180/300 | 6.0s/input | ETA 5.88h
+[15:48:07] explain train/clean: 200/300 | 5.9s/input | ETA 5.74h
+[15:49:54] explain train/clean: 220/300 | 5.9s/input | ETA 5.65h
+[15:51:37] explain train/clean: 240/300 | 5.8s/input | ETA 5.57h
+[15:53:14] explain train/clean: 260/300 | 5.7s/input | ETA 5.47h
+[15:54:55] explain train/clean: 280/300 | 5.7s/input | ETA 5.39h
+[15:56:45] explain train/clean: 300/300 | 5.7s/input | ETA 5.35h
+[15:58:23] explain train/pgd: 20/273 | 5.6s/input | ETA 5.27h
+[16:00:12] explain train/pgd: 40/273 | 5.6s/input | ETA 5.23h
+[16:01:55] explain train/pgd: 60/273 | 5.6s/input | ETA 5.17h
+[16:03:34] explain train/pgd: 80/273 | 5.5s/input | ETA 5.11h
+[16:05:06] explain train/pgd: 100/273 | 5.5s/input | ETA 5.04h
+[16:06:39] explain train/pgd: 120/273 | 5.5s/input | ETA 4.97h
+[16:08:08] explain train/pgd: 140/273 | 5.4s/input | ETA 4.90h
+[16:09:38] explain train/pgd: 160/273 | 5.4s/input | ETA 4.83h
+[16:11:00] explain train/pgd: 180/273 | 5.3s/input | ETA 4.76h
+[16:12:26] explain train/pgd: 200/273 | 5.3s/input | ETA 4.69h
+[16:13:52] explain train/pgd: 220/273 | 5.2s/input | ETA 4.63h
+[16:15:57] explain train/pgd: 240/273 | 5.3s/input | ETA 4.63h
+[16:17:32] explain train/pgd: 260/273 | 5.3s/input | ETA 4.58h
+[16:18:38] explain train/pgd: 273/273 | 5.3s/input | ETA 4.56h
+[16:20:30] explain dev/clean: 20/100 | 5.3s/input | ETA 4.54h
+[16:22:07] explain dev/clean: 40/100 | 5.3s/input | ETA 4.50h
+[16:23:59] explain dev/clean: 60/100 | 5.3s/input | ETA 4.48h
+[16:25:56] explain dev/clean: 80/100 | 5.3s/input | ETA 4.47h
+[16:27:44] explain dev/clean: 100/100 | 5.3s/input | ETA 4.44h
+[16:29:20] explain dev/pgd: 20/95 | 5.3s/input | ETA 4.40h
+[16:30:53] explain dev/pgd: 40/95 | 5.3s/input | ETA 4.36h
+[16:32:31] explain dev/pgd: 60/95 | 5.2s/input | ETA 4.32h
+[16:34:16] explain dev/pgd: 80/95 | 5.2s/input | ETA 4.29h
+[16:35:43] explain dev/pgd: 95/95 | 5.3s/input | ETA 4.28h
+[16:39:05] explain cal/clean: 20/200 | 5.4s/input | ETA 4.35h
+[16:42:34] explain cal/clean: 40/200 | 5.5s/input | ETA 4.42h
+[16:45:56] explain cal/clean: 60/200 | 5.6s/input | ETA 4.48h
+[16:49:08] explain cal/clean: 80/200 | 5.7s/input | ETA 4.52h
+[16:52:13] explain cal/clean: 100/200 | 5.8s/input | ETA 4.55h
+[16:55:18] explain cal/clean: 120/200 | 5.9s/input | ETA 4.58h
+[16:57:20] explain cal/clean: 140/200 | 5.9s/input | ETA 4.55h
+[16:59:13] explain cal/clean: 160/200 | 5.9s/input | ETA 4.51h
+[17:01:07] explain cal/clean: 180/200 | 5.9s/input | ETA 4.48h
+[17:02:53] explain cal/clean: 200/200 | 5.9s/input | ETA 4.44h
+[17:04:38] explain test/clean: 20/300 | 5.8s/input | ETA 4.40h
+[17:06:24] explain test/clean: 40/300 | 5.8s/input | ETA 4.36h
+[17:08:09] explain test/clean: 60/300 | 5.8s/input | ETA 4.31h
+[17:10:02] explain test/clean: 80/300 | 5.8s/input | ETA 4.28h
+[17:11:55] explain test/clean: 100/300 | 5.8s/input | ETA 4.25h
+[17:13:44] explain test/clean: 120/300 | 5.8s/input | ETA 4.21h
+[17:15:25] explain test/clean: 140/300 | 5.8s/input | ETA 4.17h
+[17:16:59] explain test/clean: 160/300 | 5.8s/input | ETA 4.12h
+[17:18:43] explain test/clean: 180/300 | 5.8s/input | ETA 4.08h
+[17:20:35] explain test/clean: 200/300 | 5.8s/input | ETA 4.05h
+[17:22:16] explain test/clean: 220/300 | 5.7s/input | ETA 4.01h
+[17:23:59] explain test/clean: 240/300 | 5.7s/input | ETA 3.97h
+[17:25:38] explain test/clean: 260/300 | 5.7s/input | ETA 3.93h
+[17:27:20] explain test/clean: 280/300 | 5.7s/input | ETA 3.89h
+[17:29:09] explain test/clean: 300/300 | 5.7s/input | ETA 3.85h
+[17:31:13] explain test/pgd: 20/271 | 5.7s/input | ETA 3.83h
+[17:33:23] explain test/pgd: 40/271 | 5.7s/input | ETA 3.80h
+[17:35:35] explain test/pgd: 60/271 | 5.7s/input | ETA 3.78h
+[17:37:47] explain test/pgd: 80/271 | 5.8s/input | ETA 3.76h
+[17:39:49] explain test/pgd: 100/271 | 5.8s/input | ETA 3.73h
+[17:41:27] explain test/pgd: 120/271 | 5.8s/input | ETA 3.69h
+[17:43:01] explain test/pgd: 140/271 | 5.7s/input | ETA 3.65h
+[17:44:34] explain test/pgd: 160/271 | 5.7s/input | ETA 3.60h
+[17:45:57] explain test/pgd: 180/271 | 5.7s/input | ETA 3.56h
+[17:47:24] explain test/pgd: 200/271 | 5.7s/input | ETA 3.52h
+[17:48:49] explain test/pgd: 220/271 | 5.7s/input | ETA 3.47h
+[17:50:21] explain test/pgd: 240/271 | 5.6s/input | ETA 3.43h
+[17:52:04] explain test/pgd: 260/271 | 5.6s/input | ETA 3.40h
+[17:53:54] explain test/pgd: 271/271 | 5.7s/input | ETA 3.40h
+[17:56:49] explain test/apgd: 20/271 | 5.7s/input | ETA 3.39h
+[17:59:53] explain test/apgd: 40/271 | 5.8s/input | ETA 3.39h
+[18:02:44] explain test/apgd: 60/271 | 5.8s/input | ETA 3.37h
+[18:05:56] explain test/apgd: 80/271 | 5.8s/input | ETA 3.37h
+[18:08:49] explain test/apgd: 100/271 | 5.9s/input | ETA 3.36h
+[18:11:35] explain test/apgd: 120/271 | 5.9s/input | ETA 3.34h
+[18:14:07] explain test/apgd: 140/271 | 5.9s/input | ETA 3.32h
+[18:16:47] explain test/apgd: 160/271 | 5.9s/input | ETA 3.30h
+[18:19:53] explain test/apgd: 180/271 | 6.0s/input | ETA 3.29h
+[18:22:53] explain test/apgd: 200/271 | 6.0s/input | ETA 3.27h
+[18:25:41] explain test/apgd: 220/271 | 6.0s/input | ETA 3.25h
+[18:28:16] explain test/apgd: 240/271 | 6.1s/input | ETA 3.23h
+[18:30:42] explain test/apgd: 260/271 | 6.1s/input | ETA 3.20h
+[18:31:34] explain test/apgd: 271/271 | 6.1s/input | ETA 3.18h
+[18:33:21] explain test/cw: 20/270 | 6.1s/input | ETA 3.14h
+[18:35:15] explain test/cw: 40/270 | 6.1s/input | ETA 3.11h
+[18:37:04] explain test/cw: 60/270 | 6.1s/input | ETA 3.07h
+[18:38:46] explain test/cw: 80/270 | 6.0s/input | ETA 3.03h
+[18:40:31] explain test/cw: 100/270 | 6.0s/input | ETA 3.00h
+[18:43:25] explain test/cw: 120/270 | 6.1s/input | ETA 2.98h
+[18:46:57] explain test/cw: 140/270 | 6.1s/input | ETA 2.96h
+[18:50:18] explain test/cw: 160/270 | 6.1s/input | ETA 2.95h
+[18:53:45] explain test/cw: 180/270 | 6.2s/input | ETA 2.94h
+[18:57:04] explain test/cw: 200/270 | 6.2s/input | ETA 2.92h
+[19:00:17] explain test/cw: 220/270 | 6.3s/input | ETA 2.90h
+[19:03:31] explain test/cw: 240/270 | 6.3s/input | ETA 2.88h
+[19:06:35] explain test/cw: 260/270 | 6.3s/input | ETA 2.86h
+[19:08:22] explain test/cw: 270/270 | 6.3s/input | ETA 2.85h
+[19:11:35] explain test/patch: 20/168 | 6.4s/input | ETA 2.83h
+[19:14:33] explain test/patch: 40/168 | 6.4s/input | ETA 2.80h
+[19:17:53] explain test/patch: 60/168 | 6.4s/input | ETA 2.78h
+[19:21:01] explain test/patch: 80/168 | 6.5s/input | ETA 2.76h
+[19:23:19] explain test/patch: 100/168 | 6.5s/input | ETA 2.72h
+[19:25:19] explain test/patch: 120/168 | 6.5s/input | ETA 2.69h
+[19:27:16] explain test/patch: 140/168 | 6.5s/input | ETA 2.65h
+[19:29:03] explain test/patch: 160/168 | 6.4s/input | ETA 2.61h
+[19:29:35] explain test/patch: 168/168 | 6.4s/input | ETA 2.59h
+[19:31:18] explain test/fgsm: 20/83 | 6.4s/input | ETA 2.55h
+[19:33:01] explain test/fgsm: 40/83 | 6.4s/input | ETA 2.51h
+[19:34:47] explain test/fgsm: 60/83 | 6.4s/input | ETA 2.47h
+[19:36:41] explain test/fgsm: 80/83 | 6.4s/input | ETA 2.43h
+[19:36:56] explain test/fgsm: 83/83 | 6.4s/input | ETA 2.43h
+[19:38:34] explain test/gauss2: 20/100 | 6.4s/input | ETA 2.39h
+[19:40:04] explain test/gauss2: 40/100 | 6.4s/input | ETA 2.35h
+[19:41:39] explain test/gauss2: 60/100 | 6.4s/input | ETA 2.31h
+[19:43:07] explain test/gauss2: 80/100 | 6.3s/input | ETA 2.26h
+[19:44:44] explain test/gauss2: 100/100 | 6.3s/input | ETA 2.22h
+[19:46:11] explain test/gauss4: 20/100 | 6.3s/input | ETA 2.18h
+[19:47:39] explain test/gauss4: 40/100 | 6.3s/input | ETA 2.14h
+Traceback (most recent call last):
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\experiments\slice_belief.py", line 595, in <module>
+    main()
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\experiments\slice_belief.py", line 591, in main
+    getattr(study, f"stage_{stage}")()
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\experiments\slice_belief.py", line 490, in stage_explain
+    shard["records"][index] = self.explain_one(
+                              ^^^^^^^^^^^^^^^^^
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\experiments\slice_belief.py", line 424, in explain_one
+    "slice": slice_explainer.explain(context, slice_sampler, initial_sample=shared),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\explainers\slice.py", line 152, in explain
+    X, y = self._training_set(context, masks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\explainers\perturbation.py", line 451, in _training_set
+    y = self.engine.query(context, masks)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\1Columbia\IEOR4742 Deep Learning\Adversarial_Attacks_Code_Final\explainers\perturbation.py", line 268, in query
+    return torch.cat(outputs).to("cpu", REGRESSION_DTYPE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: CUDA error: an illegal memory access was encountered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

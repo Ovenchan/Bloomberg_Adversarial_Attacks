@@ -1,0 +1,39 @@
+{
+  "experiment": "17_imagenet_pgd_detector_geometry",
+  "num_identities": 250,
+  "detector_train_identities": 200,
+  "detector_test_identities": 50,
+  "identity_overlap": 0,
+  "detector": {
+    "accuracy": 0.99,
+    "roc_auc": 0.9984000000000001,
+    "confusion_matrix": [
+      [
+        50,
+        0
+      ],
+      [
+        1,
+        49
+      ]
+    ],
+    "clean_score_mean": 0.004196694043231361,
+    "clean_score_median": 0.001163555551022928,
+    "clean_score_max": 0.042141799943719555,
+    "pgd_score_mean": 0.9662567322703598,
+    "pgd_score_median": 0.9991585083344872,
+    "pgd_score_min": 0.021824051358795938,
+    "adversarial_recall": 0.98
+  },
+  "geometry": {
+    "mean_clean_adversarial_cosine_similarity": 0.109170101583004,
+    "mean_l2_displacement": 66.66168212890625,
+    "median_l2_displacement": 67.21488952636719,
+    "mean_relative_l2_displacement": 1.3571306467056274,
+    "mean_clean_embedding_norm": 49.1122932434082,
+    "mean_pgd_embedding_norm": 50.942359924316406,
+    "mean_absolute_embedding_norm_change": 1.903596043586731,
+    "mean_displacement_vector_norm": 20.22905731201172
+  },
+  "model_path": "data\\processed\\models\\imagenet5_pgd_logistic_detector.pkl"
+}

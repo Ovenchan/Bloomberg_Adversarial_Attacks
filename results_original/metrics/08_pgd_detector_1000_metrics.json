@@ -1,0 +1,31 @@
+{
+    "experiment": "08_train_pgd_detector",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "attack": "pgd",
+    "num_image_pairs": 1000,
+    "train_image_pairs": 800,
+    "test_image_pairs": 200,
+    "train_embeddings": 1600,
+    "test_embeddings": 400,
+    "test_size": 0.2,
+    "random_state": 42,
+    "accuracy": 1.0,
+    "roc_auc": 1.0,
+    "clean_precision": 1.0,
+    "clean_recall": 1.0,
+    "clean_f1": 1.0,
+    "pgd_precision": 1.0,
+    "pgd_recall": 1.0,
+    "pgd_f1": 1.0,
+    "confusion_matrix": [
+        [
+            200,
+            0
+        ],
+        [
+            0,
+            200
+        ]
+    ]
+}

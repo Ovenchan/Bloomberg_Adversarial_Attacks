@@ -1,0 +1,91 @@
+[14:42:08] === stage manifest ===
+[14:42:11] manifest: {'train': 20, 'dev': 10, 'cal': 10, 'test': 20, 'reserve': 3865}
+[14:42:11] === stage corpus ===
+[14:42:14] train: clean accuracy 0.9000 (18/20)
+[14:42:16] train/pgd: generated in 2s
+[14:42:16] train/pgd: ASR 18/18 = 1.0000
+[14:42:23] train/apgd: generated in 6s
+[14:42:23] train/apgd: ASR 18/18 = 1.0000
+[14:42:24] train/cw: generated in 1s
+[14:42:24] train/cw: ASR 17/18 = 0.9444
+[14:42:26] train/patch: generated in 2s
+[14:42:26] train/patch: ASR 4/18 = 0.2222
+[14:42:27] dev: clean accuracy 0.8000 (8/10)
+[14:42:28] dev/pgd: generated in 1s
+[14:42:29] dev/pgd: ASR 7/8 = 0.8750
+[14:42:32] dev/apgd: generated in 3s
+[14:42:32] dev/apgd: ASR 8/8 = 1.0000
+[14:42:32] dev/cw: generated in 0s
+[14:42:32] dev/cw: ASR 5/8 = 0.6250
+[14:42:33] dev/patch: generated in 1s
+[14:42:33] dev/patch: ASR 3/8 = 0.3750
+[14:42:33] cal: clean accuracy 0.9000 (9/10)
+[14:42:34] test: clean accuracy 0.9000 (18/20)
+[14:42:35] test/pgd: generated in 1s
+[14:42:35] test/pgd: ASR 15/18 = 0.8333
+[14:42:38] test/apgd: generated in 4s
+[14:42:39] test/apgd: ASR 18/18 = 1.0000
+[14:42:39] test/cw: generated in 1s
+[14:42:39] test/cw: ASR 14/18 = 0.7778
+[14:42:41] test/patch: generated in 2s
+[14:42:41] test/patch: ASR 2/18 = 0.1111
+[14:42:42] test/fgsm: generated in 0s
+[14:42:42] test/fgsm: ASR 6/18 = 0.3333
+[14:42:42] test/gauss2: prediction changed on 0.000
+[14:42:42] test/gauss4: prediction changed on 0.100
+[14:42:42] test/gauss8: prediction changed on 0.100
+[14:42:42] test/unif8: prediction changed on 0.100
+[14:42:42] === stage segment ===
+[14:43:00] segment train/clean: 20 inputs, K median 24 [15-31], 1.20s/input
+[14:43:04] segment train/pgd: 18 inputs, K median 24 [15-32], 0.97s/input
+[14:43:07] segment dev/clean: 10 inputs, K median 24 [20-28], 0.81s/input
+[14:43:10] segment dev/pgd: 7 inputs, K median 25 [22-39], 0.73s/input
+[14:43:13] segment cal/clean: 10 inputs, K median 22 [19-27], 0.64s/input
+[14:43:16] segment test/clean: 20 inputs, K median 24 [14-30], 0.72s/input
+[14:43:18] segment test/pgd: 15 inputs, K median 26 [19-34], 0.68s/input
+[14:43:21] segment test/apgd: 18 inputs, K median 22 [17-30], 0.73s/input
+[14:43:24] segment test/cw: 14 inputs, K median 22 [14-30], 0.67s/input
+[14:43:25] segment test/patch: 2 inputs, K median 22 [17-27], 0.52s/input
+[14:43:27] segment test/fgsm: 6 inputs, K median 26 [20-28], 0.57s/input
+[14:43:30] segment test/gauss2: 10 inputs, K median 24 [18-29], 0.58s/input
+[14:43:32] segment test/gauss4: 10 inputs, K median 26 [18-28], 0.61s/input
+[14:43:35] segment test/gauss8: 10 inputs, K median 28 [17-30], 0.63s/input
+[14:43:37] segment test/unif8: 10 inputs, K median 26 [17-32], 0.60s/input
+[14:43:39] segment dev/apgd: 8 inputs, K median 24 [19-33], 0.58s/input
+[14:43:41] segment dev/cw: 5 inputs, K median 25 [24-27], 0.52s/input
+[14:43:43] segment dev/patch: 3 inputs, K median 25 [23-26], 0.50s/input
+[14:43:46] segment train/apgd: 18 inputs, K median 24 [18-30], 0.81s/input
+[14:43:49] segment train/cw: 17 inputs, K median 24 [16-31], 0.70s/input
+[14:43:51] segment train/patch: 4 inputs, K median 24 [18-25], 0.51s/input
+[14:43:51] === stage sigma ===
+[14:44:17] sigma policy: 0.4 from {0.4: 3}
+[14:44:17] === stage explain ===
+[14:44:51] explain train/clean: 20/20 | 1.7s/input | ETA 0.10h
+[14:45:28] explain train/pgd: 18/18 | 1.9s/input | ETA 0.10h
+[14:45:45] explain dev/clean: 10/10 | 1.8s/input | ETA 0.10h
+[14:45:58] explain dev/pgd: 7/7 | 1.8s/input | ETA 0.09h
+[14:46:14] explain cal/clean: 10/10 | 1.8s/input | ETA 0.08h
+[14:46:51] explain test/clean: 20/20 | 1.8s/input | ETA 0.08h
+[14:47:16] explain test/pgd: 15/15 | 1.8s/input | ETA 0.07h
+[14:47:43] explain test/apgd: 18/18 | 1.8s/input | ETA 0.06h
+[14:48:11] explain test/cw: 14/14 | 1.8s/input | ETA 0.05h
+[14:48:15] explain test/patch: 2/2 | 1.8s/input | ETA 0.05h
+[14:48:26] explain test/fgsm: 6/6 | 1.8s/input | ETA 0.05h
+[14:48:46] explain test/gauss2: 10/10 | 1.8s/input | ETA 0.04h
+[14:49:06] explain test/gauss4: 10/10 | 1.8s/input | ETA 0.04h
+[14:49:24] explain test/gauss8: 10/10 | 1.8s/input | ETA 0.03h
+[14:49:44] explain test/unif8: 10/10 | 1.8s/input | ETA 0.03h
+[14:49:54] explain dev/apgd: 8/8 | 1.8s/input | ETA 0.02h
+[14:50:03] explain dev/cw: 5/5 | 1.8s/input | ETA 0.02h
+[14:50:08] explain dev/patch: 3/3 | 1.8s/input | ETA 0.02h
+[14:50:34] explain train/apgd: 18/18 | 1.8s/input | ETA 0.01h
+[14:51:04] explain train/cw: 17/17 | 1.8s/input | ETA 0.00h
+[14:51:11] explain train/patch: 4/4 | 1.8s/input | ETA 0.00h
+[14:51:11] peak GPU memory 3.98 GiB
+[14:51:11] === stage repeats ===
+[14:51:49] repeats test/clean: 10 inputs x 2
+[14:52:13] repeats test/pgd: 7 inputs x 2
+[14:52:13] === stage fidelity ===
+[14:52:17] fidelity: 140 rows
+[14:54:11] analysis tables written to results\slice_belief_smoke\tables
+[14:54:58] analysis tables written to results\slice_belief_smoke\tables

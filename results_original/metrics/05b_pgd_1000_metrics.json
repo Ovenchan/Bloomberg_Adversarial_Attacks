@@ -1,0 +1,17 @@
+{
+    "experiment": "05b_generate_pgd",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "num_samples": 1000,
+    "batch_size": 20,
+    "epsilon": 0.03137254901960784,
+    "alpha": 0.00784313725490196,
+    "steps": 10,
+    "clean_accuracy": 0.966,
+    "adversarial_accuracy": 0.002,
+    "originally_correct": 966,
+    "successful_attacks": 964,
+    "attack_success_rate": 0.9979296066252588,
+    "max_linf_perturbation": 0.03137257695198059,
+    "mean_absolute_perturbation": 0.017486196011304855
+}

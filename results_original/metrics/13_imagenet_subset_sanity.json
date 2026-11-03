@@ -1,0 +1,76 @@
+{
+  "experiment": "13_imagenet_subset_sanity",
+  "dataset": "ImageNet Object Localization Challenge subset",
+  "num_classes": 5,
+  "classes": {
+    "n01440764": "tench",
+    "n02106662": "German shepherd",
+    "n02391049": "zebra",
+    "n02504458": "African elephant",
+    "n02814533": "beach wagon"
+  },
+  "protocol": {
+    "classifier_train_per_class": 75,
+    "internal_val_per_class": 20,
+    "final_official_val_per_class": 50,
+    "classifier_train_total": 375,
+    "internal_val_total": 100,
+    "final_official_val_total": 250
+  },
+  "separation": {
+    "classifier_train_source": "official ImageNet TRAIN",
+    "internal_val_source": "official ImageNet TRAIN",
+    "final_eval_source": "official ImageNet VAL",
+    "train_internal_val_overlap": 0,
+    "train_final_val_overlap": 0,
+    "internal_val_final_val_overlap": 0
+  },
+  "per_class": {
+    "n01440764": {
+      "class_name": "tench",
+      "available_train": 400,
+      "available_official_val": 50,
+      "classifier_train": 75,
+      "internal_val": 20,
+      "final_official_val": 50
+    },
+    "n02106662": {
+      "class_name": "German shepherd",
+      "available_train": 400,
+      "available_official_val": 50,
+      "classifier_train": 75,
+      "internal_val": 20,
+      "final_official_val": 50
+    },
+    "n02391049": {
+      "class_name": "zebra",
+      "available_train": 400,
+      "available_official_val": 50,
+      "classifier_train": 75,
+      "internal_val": 20,
+      "final_official_val": 50
+    },
+    "n02504458": {
+      "class_name": "African elephant",
+      "available_train": 315,
+      "available_official_val": 50,
+      "classifier_train": 75,
+      "internal_val": 20,
+      "final_official_val": 50
+    },
+    "n02814533": {
+      "class_name": "beach wagon",
+      "available_train": 96,
+      "available_official_val": 50,
+      "classifier_train": 75,
+      "internal_val": 20,
+      "final_official_val": 50
+    }
+  },
+  "manifests": {
+    "classifier_train": "data/raw/imagenet/meta/imagenet5_train_75_per_class.txt",
+    "internal_val": "data/raw/imagenet/meta/imagenet5_internal_val_20_per_class.txt",
+    "final_official_val": "data/raw/imagenet/meta/imagenet5_final_val_50_per_class.txt"
+  },
+  "status": "passed"
+}

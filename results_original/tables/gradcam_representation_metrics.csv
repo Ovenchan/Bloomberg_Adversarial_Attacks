@@ -1,0 +1,9 @@
+metric,value
+mean_cosine_similarity,0.578364
+mean_euclidean_distance,3.877758
+mean_clean_norm,4.016820
+mean_pgd_norm,4.474557
+mean_absolute_norm_change,1.090024
+pca_pc1_variance,0.198352
+pca_pc2_variance,0.135288
+pca_pc1_pc2_explained_variance,0.333640

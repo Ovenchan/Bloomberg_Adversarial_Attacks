@@ -1,0 +1,1 @@
+[10:11:05] analysis tables written to results\slice_belief_fixed1000\tables

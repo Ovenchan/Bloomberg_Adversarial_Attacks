@@ -1,0 +1,19 @@
+{
+    "experiment": "09a_generate_apgd",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "attack": "apgd",
+    "num_samples": 100,
+    "batch_size": 20,
+    "epsilon": 0.03137254901960784,
+    "steps": 20,
+    "n_restarts": 1,
+    "seed": 42,
+    "clean_accuracy": 0.99,
+    "adversarial_accuracy": 0.0,
+    "originally_correct": 99,
+    "successful_attacks": 99,
+    "attack_success_rate": 1.0,
+    "max_linf_perturbation": 0.03137257695198059,
+    "mean_absolute_perturbation": 0.01959853619337082
+}

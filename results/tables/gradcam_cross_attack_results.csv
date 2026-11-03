@@ -1,0 +1,5 @@
+attack,accuracy,roc_auc,tpr_at_1_percent_fpr,tpr_at_5_percent_fpr
+PGD,0.8700,0.952375,0.670,0.785
+FGSM,0.4850,0.452425,0.015,0.035
+APGD,0.9375,0.993900,0.915,0.955
+CW,0.5175,0.522850,0.050,0.095

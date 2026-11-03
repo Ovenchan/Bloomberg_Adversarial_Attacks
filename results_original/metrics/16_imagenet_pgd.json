@@ -1,0 +1,20 @@
+{
+  "experiment": "16_imagenet_pgd",
+  "num_images": 250,
+  "epsilon": 0.03137254901960784,
+  "epsilon_255": 8.0,
+  "alpha": 0.00784313725490196,
+  "alpha_255": 2.0,
+  "steps": 20,
+  "clean_accuracy": 0.9879999756813049,
+  "adversarial_accuracy": 0.0,
+  "originally_correct": 247,
+  "successful_attacks": 247,
+  "attack_success_rate": 1.0,
+  "max_linf": 0.03137257695198059,
+  "mean_linf": 0.03137257695198059,
+  "embedding_shape": [
+    250,
+    384
+  ]
+}

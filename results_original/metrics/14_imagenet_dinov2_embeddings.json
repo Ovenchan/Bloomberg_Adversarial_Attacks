@@ -1,0 +1,78 @@
+{
+  "experiment": "14_imagenet_dinov2_embeddings",
+  "model": "dinov2_vits14",
+  "embedding_dimension": 384,
+  "preprocessing": {
+    "resize_shorter_side": 256,
+    "center_crop": 224,
+    "normalization_mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "normalization_std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "splits": {
+    "classifier_train": {
+      "num_images": 375,
+      "embedding_shape": [
+        375,
+        384
+      ],
+      "label_counts": {
+        "tench": 75,
+        "German shepherd": 75,
+        "zebra": 75,
+        "African elephant": 75,
+        "beach wagon": 75
+      },
+      "unique_image_ids": 375,
+      "finite_embeddings": true,
+      "output_path": "data/processed/embeddings/imagenet5/train_dinov2_vits14.pt"
+    },
+    "internal_validation": {
+      "num_images": 100,
+      "embedding_shape": [
+        100,
+        384
+      ],
+      "label_counts": {
+        "tench": 20,
+        "German shepherd": 20,
+        "zebra": 20,
+        "African elephant": 20,
+        "beach wagon": 20
+      },
+      "unique_image_ids": 100,
+      "finite_embeddings": true,
+      "output_path": "data/processed/embeddings/imagenet5/internal_val_dinov2_vits14.pt"
+    },
+    "official_final_validation": {
+      "num_images": 250,
+      "embedding_shape": [
+        250,
+        384
+      ],
+      "label_counts": {
+        "tench": 50,
+        "German shepherd": 50,
+        "zebra": 50,
+        "African elephant": 50,
+        "beach wagon": 50
+      },
+      "unique_image_ids": 250,
+      "finite_embeddings": true,
+      "output_path": "data/processed/embeddings/imagenet5/final_val_dinov2_vits14.pt"
+    }
+  },
+  "identity_overlap": {
+    "train_internal": 0,
+    "train_final": 0,
+    "internal_final": 0
+  },
+  "status": "passed"
+}

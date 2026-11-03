@@ -1,0 +1,14 @@
+{
+    "experiment": "07_compare_pgd_embeddings",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "num_samples": 1000,
+    "embedding_dimension": 384,
+    "mean_cosine_similarity": 0.1603947877883911,
+    "std_cosine_similarity": 0.10845057666301727,
+    "mean_euclidean_distance": 62.08052062988281,
+    "std_euclidean_distance": 4.524154186248779,
+    "mean_clean_embedding_norm": 47.591949462890625,
+    "mean_adversarial_embedding_norm": 48.391048431396484,
+    "mean_absolute_norm_change": 1.6836601495742798
+}

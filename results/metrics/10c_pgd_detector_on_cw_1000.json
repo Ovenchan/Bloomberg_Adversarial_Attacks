@@ -1,0 +1,36 @@
+{
+    "experiment": "10c_evaluate_pgd_detector_on_cw",
+    "dataset": "cifar10",
+    "encoder": "dinov2_vits14",
+    "detector_training_attack": "pgd",
+    "evaluation_attack": "cw",
+    "source_split": "official_cifar10_test",
+    "classifier_training_split": "official_cifar10_train",
+    "classifier_evaluation_split": "official_cifar10_test",
+    "num_available_image_pairs": 1000,
+    "detector_training_image_pairs": 800,
+    "detector_heldout_image_pairs": 200,
+    "num_evaluation_embeddings": 400,
+    "detector_train_test_intersection": 0,
+    "accuracy": 0.53,
+    "roc_auc": 0.7746,
+    "clean_precision": 0.5154639175257731,
+    "clean_recall": 1.0,
+    "clean_f1": 0.6802721088435374,
+    "cw_precision": 1.0,
+    "cw_recall": 0.06,
+    "cw_f1": 0.11320754716981132,
+    "confusion_matrix": [
+        [
+            200,
+            0
+        ],
+        [
+            188,
+            12
+        ]
+    ],
+    "max_clean_score": 0.10005489058062653,
+    "min_cw_score": 6.803963159719779e-07,
+    "perfect_score_separation": false
+}

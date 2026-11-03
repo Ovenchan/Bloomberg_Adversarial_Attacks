@@ -1,0 +1,14 @@
+{
+    "experiment": "04_linear_probe",
+    "encoder": "dinov2_vits14",
+    "dataset": "cifar10",
+    "training_split": "official_cifar10_train",
+    "evaluation_split": "official_cifar10_test",
+    "train_samples": 50000,
+    "test_samples": 10000,
+    "embedding_dimension": 384,
+    "classifier": "logistic_regression",
+    "solver": "lbfgs",
+    "max_iter": 2000,
+    "accuracy": 0.9483
+}

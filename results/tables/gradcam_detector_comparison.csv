@@ -1,0 +1,15 @@
+approach,attack,roc_auc,tpr_at_1_percent_fpr,tpr_at_5_percent_fpr
+supervised_cnn,PGD,0.978075,0.910,0.935
+supervised_cnn,FGSM,0.625725,0.090,0.180
+supervised_cnn,APGD,0.980625,0.950,0.950
+supervised_cnn,CW,0.494325,0.000,0.035
+supervised_cnn,Patch,0.738100,0.190,0.295
+autoencoder,PGD,0.711000,0.155,0.275
+autoencoder,FGSM,0.501000,0.010,0.045
+autoencoder,APGD,0.421000,0.165,0.220
+autoencoder,CW,0.520000,0.015,0.055
+autoencoder,Patch,0.701000,0.120,0.235
+mahalanobis,PGD,0.901950,0.480,0.595
+mahalanobis,FGSM,0.554375,0.065,0.090
+mahalanobis,APGD,0.973100,0.795,0.865
+mahalanobis,CW,0.582500,0.090,0.125

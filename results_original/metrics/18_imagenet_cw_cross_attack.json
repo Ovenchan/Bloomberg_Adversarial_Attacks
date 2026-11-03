@@ -1,0 +1,50 @@
+{
+  "experiment": "18_imagenet_cw_cross_attack",
+  "attack": {
+    "c": 1.0,
+    "kappa": 0.0,
+    "steps": 100,
+    "learning_rate": 0.01,
+    "num_images": 250,
+    "clean_accuracy": 0.9879999756813049,
+    "cw_accuracy": 0.01600000075995922,
+    "originally_correct": 247,
+    "successful_attacks": 243,
+    "attack_success_rate": 0.9838056680161943,
+    "mean_pixel_l2": 0.9198257327079773,
+    "mean_pixel_linf": 0.03143233060836792,
+    "max_pixel_linf": 0.0874524712562561,
+    "mean_absolute_pixel_change": 0.0015133311972022057
+  },
+  "geometry": {
+    "mean_clean_cw_cosine_similarity": 0.678006649017334,
+    "mean_l2_displacement": 36.961585998535156,
+    "mean_relative_l2_displacement": 0.7517648339271545,
+    "mean_pgd_cw_displacement_alignment": 0.5257752537727356,
+    "median_pgd_cw_displacement_alignment": 0.5362280607223511
+  },
+  "frozen_pgd_detector": {
+    "num_heldout_identities": 50,
+    "accuracy": 0.65,
+    "roc_auc": 0.9646,
+    "cw_recall": 0.3,
+    "confusion_matrix": [
+      [
+        50,
+        0
+      ],
+      [
+        35,
+        15
+      ]
+    ],
+    "clean_score_mean": 0.005120415240526199,
+    "clean_score_median": 0.0006932662217877805,
+    "cw_score_mean": 0.3410840332508087,
+    "cw_score_median": 0.18797163665294647,
+    "mean_cw_detector_decision_shift": 6.168779373168945,
+    "mean_pgd_detector_decision_shift": 14.855382919311523,
+    "successful_cw_examples_in_test": 49,
+    "successful_cw_recall": 0.30612244897959184
+  }
+}

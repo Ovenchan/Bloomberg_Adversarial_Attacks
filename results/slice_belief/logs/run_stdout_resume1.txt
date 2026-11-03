@@ -1,0 +1,98 @@
+[19:50:52] === stage manifest ===
+[19:50:56] manifest: {'train': 300, 'dev': 100, 'cal': 200, 'test': 300, 'reserve': 3025}
+[19:50:56] === stage corpus ===
+[19:50:59] train: clean accuracy 0.9100 (273/300)
+[19:51:00] train/pgd: ASR 273/273 = 1.0000
+[19:51:01] train/apgd: ASR 273/273 = 1.0000
+[19:51:02] train/cw: ASR 272/273 = 0.9963
+[19:51:03] train/patch: ASR 169/273 = 0.6190
+[19:51:03] dev: clean accuracy 0.9500 (95/100)
+[19:51:04] dev/pgd: ASR 95/95 = 1.0000
+[19:51:04] dev/apgd: ASR 95/95 = 1.0000
+[19:51:04] dev/cw: ASR 95/95 = 1.0000
+[19:51:04] dev/patch: ASR 62/95 = 0.6526
+[19:51:05] cal: clean accuracy 0.9250 (185/200)
+[19:51:06] test: clean accuracy 0.9033 (271/300)
+[19:51:07] test/pgd: ASR 271/271 = 1.0000
+[19:51:08] test/apgd: ASR 271/271 = 1.0000
+[19:51:08] test/cw: ASR 270/271 = 0.9963
+[19:51:09] test/patch: ASR 168/271 = 0.6199
+[19:51:10] test/fgsm: ASR 83/271 = 0.3063
+[19:51:11] test/gauss2: prediction changed on 0.020
+[19:51:11] test/gauss4: prediction changed on 0.020
+[19:51:11] test/gauss8: prediction changed on 0.050
+[19:51:12] test/unif8: prediction changed on 0.030
+[19:51:12] === stage segment ===
+[19:51:12] === stage sigma ===
+[19:51:12] sigma policy: 0.4
+[19:51:12] === stage explain ===
+[19:53:00] explain test/gauss4: 20/60 | 5.4s/input | ETA 1.81h
+[19:54:37] explain test/gauss4: 40/60 | 5.1s/input | ETA 1.69h
+[19:56:22] explain test/gauss4: 60/60 | 5.2s/input | ETA 1.68h
+[19:58:28] explain test/gauss8: 20/100 | 5.5s/input | ETA 1.74h
+[20:00:36] explain test/gauss8: 40/100 | 5.6s/input | ETA 1.77h
+[20:02:34] explain test/gauss8: 60/100 | 5.7s/input | ETA 1.75h
+[20:04:26] explain test/gauss8: 80/100 | 5.7s/input | ETA 1.71h
+[20:06:19] explain test/gauss8: 100/100 | 5.7s/input | ETA 1.68h
+[20:07:45] explain test/unif8: 20/100 | 5.5s/input | ETA 1.60h
+[20:09:17] explain test/unif8: 40/100 | 5.4s/input | ETA 1.55h
+[20:10:48] explain test/unif8: 60/100 | 5.3s/input | ETA 1.49h
+[20:12:23] explain test/unif8: 80/100 | 5.3s/input | ETA 1.45h
+[20:14:13] explain test/unif8: 100/100 | 5.3s/input | ETA 1.42h
+[20:15:38] explain dev/apgd: 20/95 | 5.2s/input | ETA 1.38h
+[20:16:53] explain dev/apgd: 40/95 | 5.1s/input | ETA 1.32h
+[20:18:19] explain dev/apgd: 60/95 | 5.1s/input | ETA 1.28h
+[20:19:40] explain dev/apgd: 80/95 | 5.0s/input | ETA 1.24h
+[20:20:36] explain dev/apgd: 95/95 | 5.0s/input | ETA 1.20h
+[20:22:17] explain dev/cw: 20/95 | 5.0s/input | ETA 1.18h
+[20:23:54] explain dev/cw: 40/95 | 5.0s/input | ETA 1.15h
+[20:26:46] explain dev/cw: 60/95 | 5.1s/input | ETA 1.16h
+[20:30:10] explain dev/cw: 80/95 | 5.4s/input | ETA 1.18h
+[20:32:28] explain dev/cw: 95/95 | 5.5s/input | ETA 1.19h
+[20:35:48] explain dev/patch: 20/62 | 5.7s/input | ETA 1.20h
+[20:37:21] explain dev/patch: 40/62 | 5.7s/input | ETA 1.16h
+[20:38:52] explain dev/patch: 60/62 | 5.6s/input | ETA 1.12h
+[20:39:02] explain dev/patch: 62/62 | 5.6s/input | ETA 1.11h
+[20:40:25] explain train/apgd: 20/273 | 5.6s/input | ETA 1.07h
+[20:41:50] explain train/apgd: 40/273 | 5.5s/input | ETA 1.03h
+[20:43:20] explain train/apgd: 60/273 | 5.5s/input | ETA 0.99h
+[20:44:54] explain train/apgd: 80/273 | 5.4s/input | ETA 0.96h
+[20:46:17] explain train/apgd: 100/273 | 5.4s/input | ETA 0.92h
+[20:47:45] explain train/apgd: 120/273 | 5.4s/input | ETA 0.89h
+[20:49:09] explain train/apgd: 140/273 | 5.3s/input | ETA 0.85h
+[20:51:01] explain train/apgd: 160/273 | 5.3s/input | ETA 0.82h
+[20:52:59] explain train/apgd: 180/273 | 5.4s/input | ETA 0.79h
+[20:55:01] explain train/apgd: 200/273 | 5.4s/input | ETA 0.77h
+[20:56:46] explain train/apgd: 220/273 | 5.4s/input | ETA 0.74h
+[20:59:04] explain train/apgd: 240/273 | 5.4s/input | ETA 0.71h
+[21:00:56] explain train/apgd: 260/273 | 5.4s/input | ETA 0.68h
+[21:02:00] explain train/apgd: 273/273 | 5.4s/input | ETA 0.66h
+[21:03:52] explain train/cw: 20/272 | 5.4s/input | ETA 0.63h
+[21:06:03] explain train/cw: 40/272 | 5.4s/input | ETA 0.61h
+[21:07:51] explain train/cw: 60/272 | 5.4s/input | ETA 0.58h
+[21:09:30] explain train/cw: 80/272 | 5.4s/input | ETA 0.54h
+[21:11:25] explain train/cw: 100/272 | 5.4s/input | ETA 0.52h
+[21:13:09] explain train/cw: 120/272 | 5.4s/input | ETA 0.48h
+[21:14:44] explain train/cw: 140/272 | 5.4s/input | ETA 0.45h
+[21:16:37] explain train/cw: 160/272 | 5.4s/input | ETA 0.42h
+[21:18:39] explain train/cw: 180/272 | 5.4s/input | ETA 0.39h
+[21:20:34] explain train/cw: 200/272 | 5.4s/input | ETA 0.36h
+[21:22:21] explain train/cw: 220/272 | 5.4s/input | ETA 0.33h
+[21:24:29] explain train/cw: 240/272 | 5.5s/input | ETA 0.30h
+[21:26:30] explain train/cw: 260/272 | 5.5s/input | ETA 0.28h
+[21:27:41] explain train/cw: 272/272 | 5.5s/input | ETA 0.26h
+[21:29:36] explain train/patch: 20/169 | 5.5s/input | ETA 0.23h
+[21:31:31] explain train/patch: 40/169 | 5.5s/input | ETA 0.20h
+[21:33:36] explain train/patch: 60/169 | 5.5s/input | ETA 0.17h
+[21:35:31] explain train/patch: 80/169 | 5.5s/input | ETA 0.14h
+[21:37:43] explain train/patch: 100/169 | 5.5s/input | ETA 0.11h
+[21:39:55] explain train/patch: 120/169 | 5.5s/input | ETA 0.08h
+[21:41:28] explain train/patch: 140/169 | 5.5s/input | ETA 0.04h
+[21:43:12] explain train/patch: 160/169 | 5.5s/input | ETA 0.01h
+[21:43:56] explain train/patch: 169/169 | 5.5s/input | ETA 0.00h
+[21:43:56] peak GPU memory 6.62 GiB
+[21:43:56] === stage repeats ===
+[21:52:53] repeats test/clean: 20 inputs x 5
+[22:00:47] repeats test/pgd: 19 inputs x 5
+[22:00:47] === stage fidelity ===
+[22:01:12] fidelity: 2284 rows

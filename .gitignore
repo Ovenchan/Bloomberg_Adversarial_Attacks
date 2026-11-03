@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+data/raw/
+data/processed/
+results/logs/
+.DS_Store
+tmp
+
+imagenet_download.log
+imagenet_download_parallel.log
+SLICE_BELIEF_result.md
+Research Proposal.md
+AGENTS.md
+TODO.md
+run_all.ps1
+CLAUDE.md
+Adversarial_Attacks_Report_Final.pdf
