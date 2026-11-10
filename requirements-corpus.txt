@@ -1,0 +1,14 @@
+# Exact versions recorded in the original fixed1000 corpus.json.
+torch==2.4.1
+torchvision==0.19.1
+torchattacks==3.5.1
+scikit-learn==1.4.2
+scikit-image==0.23.2
+numpy==1.26.4
+scipy==1.13.1
+
+# Runtime/test dependencies whose original versions were not recorded.
+PyYAML
+joblib
+tqdm
+pytest

@@ -1,0 +1,381 @@
+{
+  "config": {
+    "seed": 42,
+    "experiment_seeds": [
+      42,
+      123,
+      2026
+    ],
+    "device": "auto",
+    "paths": {
+      "root": "data/raw",
+      "work_dir": "data/processed/slice_belief_fixed1000",
+      "results_dir": "results/slice_belief_fixed1000"
+    },
+    "dataset": {
+      "name": "imagenette",
+      "size": "full",
+      "resize_size": 232,
+      "image_size": 224,
+      "subset_per_class": 100
+    },
+    "partitions_per_class": {
+      "train": 35,
+      "dev": 10,
+      "cal": 20,
+      "test": 35
+    },
+    "panels_per_class": {
+      "noise": 10,
+      "stability": 2
+    },
+    "sigma_selection_images": 50,
+    "model": {
+      "weights": "IMAGENET1K_V2",
+      "target_layer": "layer4.2"
+    },
+    "attack_batch_size": 20,
+    "attacks": {
+      "pgd": {
+        "epsilon": 0.03137254901960784,
+        "alpha": 0.00784313725490196,
+        "steps": 20,
+        "random_start": true
+      },
+      "apgd": {
+        "norm": "Linf",
+        "eps": 0.03137254901960784,
+        "steps": 20,
+        "n_restarts": 1,
+        "seed": 42,
+        "loss": "ce",
+        "eot_iter": 1,
+        "rho": 0.75,
+        "verbose": false
+      },
+      "cw": {
+        "c": 1.0,
+        "kappa": 0.0,
+        "steps": 100,
+        "lr": 0.01
+      },
+      "patch": {
+        "patch_size": 48,
+        "steps": 100,
+        "learning_rate": 0.05
+      },
+      "fgsm": {
+        "eps": 0.03137254901960784
+      }
+    },
+    "partition_attacks": {
+      "train": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch"
+      ],
+      "dev": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch"
+      ],
+      "test": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch",
+        "fgsm"
+      ]
+    },
+    "noise": {
+      "gauss2": {
+        "kind": "gaussian",
+        "scale": 0.00784313725490196
+      },
+      "gauss4": {
+        "kind": "gaussian",
+        "scale": 0.01568627450980392
+      },
+      "gauss8": {
+        "kind": "gaussian",
+        "scale": 0.03137254901960784
+      },
+      "unif8": {
+        "kind": "uniform",
+        "scale": 0.03137254901960784
+      }
+    },
+    "explainers": {
+      "segmentation": {
+        "kernel_size": 5,
+        "max_dist": 200,
+        "ratio": 0.2,
+        "seed": 42
+      },
+      "sigma_values": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "query_batch_size": 250,
+      "use_amp": true,
+      "segmentation_workers": 16,
+      "slice": {
+        "num_perturb": 500,
+        "n_iterations": 1000,
+        "max_steps": 10,
+        "tolerance": 3
+      },
+      "belief": {
+        "num_perturb": 500,
+        "slack": 1e-06
+      },
+      "grid_size": 14,
+      "checkpoint_every": 20
+    },
+    "detector": {
+      "C_grid": [
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ],
+      "max_iter": 5000
+    },
+    "evaluation": {
+      "fpr_targets": [
+        0.01,
+        0.05
+      ],
+      "bootstrap_replicates": 2000,
+      "max_matched_train": 1000
+    },
+    "stage2_folds": {
+      "cw": [
+        "pgd",
+        "apgd",
+        "patch"
+      ],
+      "patch": [
+        "pgd",
+        "apgd",
+        "cw"
+      ],
+      "apgd": [
+        "pgd",
+        "cw",
+        "patch"
+      ]
+    },
+    "budget": {
+      "max_hours": 10,
+      "allow_over_budget": false,
+      "seconds_per_explained_input": 5.6,
+      "corpus_seconds_per_source": 1.5,
+      "explained_per_source": {
+        "train": 4.3,
+        "dev": 4.5,
+        "cal": 1.0,
+        "test": 4.6
+      }
+    },
+    "quality": {
+      "repeats": 5,
+      "aopc_ranks": 5
+    }
+  },
+  "method": "resnet_pool",
+  "attack_target": "ResNet-50",
+  "feature_source": "/Users/baileyyingjin/Documents/School/MSFE/26 Fall/DL/project/Bloomberg_Adversarial_Attacks/results/resnet_representation_fixed1000_complete_backup/features",
+  "feature_hashes": {
+    "train_clean.npz": "2c0bcca3d004c33312b3dde5da5e8fa9d705cac4943b6ce3d49ab47e08982549",
+    "train_pgd.npz": "80238a861aab2f26bf620705b09044e4c49f40551a5db69d2dd7209842de32ee",
+    "train_apgd.npz": "61216276895763535621abaabe1cbe2fa09dcf611a1ff2b5543558d78398ab7c",
+    "train_cw.npz": "a426cd7cf988d8cf68a742bcd28aea6856533eb1970d9ed7ab3309b00abfae11",
+    "train_patch.npz": "dc06f95a51d334274dfe1e8119192c2496021c4b2e7b39ae2ab6de78e2bfc666",
+    "dev_clean.npz": "7f9a9e91d23a2c2e6fec89040f48fca426fefece4a5b7f8c781a38fb29d8499c",
+    "dev_pgd.npz": "4f37b5343e5d755e746adb4b8b50d66c5c2cf4baba51e581012a81d76ab784d6",
+    "dev_apgd.npz": "06f75a5f65a04b2df75d86aa72b5ac158da4034182e9d87806fd6dcf1505778c",
+    "dev_cw.npz": "6b61fb0fbccccba401fd3d978a85c04de62afb16f647424d522edcbb04913f02",
+    "dev_patch.npz": "cbf7bb3a44075b2d8eecc44ef9910f71f7d1f69518f0a5203fb903bc619b93a0",
+    "cal_clean.npz": "05820349e8f6d3343a75781915f64fe07fa2b7088b6f5470a01d39b8dbcf8c4c",
+    "test_clean.npz": "4e6fa11f8688069f8515aba890b54c841d775b4718ff7bf9b7201de47511041c",
+    "test_pgd.npz": "37ca804766c3c8a886af2aa021a780af934d4ad359c8015946079d8f3a050f8c",
+    "test_apgd.npz": "ea87a4faddb026ac68107d1e8a30112ccb153c55e0ade0ac5533674e975486c7",
+    "test_cw.npz": "56394232deeb240db0cf17676c34452550f074b9a2451d628bdace8f12173a76",
+    "test_patch.npz": "dda3002f9e471fb6148c2fec64de0b67a1a3e945b52cc3ce14f5f57cf63e1780",
+    "test_fgsm.npz": "b67a240f2442b0ed80087e1278163833e5ea88682d9115e8a89aa10fd505c4d7",
+    "test_gauss2.npz": "9d5f81096834813db6fe455e7767ac6e64abc8de5429c663ab96bfc2fef13758",
+    "test_gauss4.npz": "4272c9d320b46f81456c835beb4849fbd75634ff105b2e18c3a5baee06e4a37d",
+    "test_gauss8.npz": "20ff0f88a4e33007dfebbdc475d07271f28618c2323cd81d015a58fa31eab000",
+    "test_unif8.npz": "f45d6c53661bb23a16c96b0555a4c5ad6d91f6ec3bc89f9dc5e9f3dc3bc7f3b7"
+  },
+  "corpus_files": {
+    "manifest.csv": "7ec91b9ebb07d83b13413ad8f9d3423f78106cfb06860da474d5c5301ae710da",
+    "variants.csv": "7f522f4ca0a34beac0cdf699e3db368678536be8b82e6f84f31e974e22e561ac",
+    "corpus.json": "8f190b07837ec91d887a6d36f3844f6220c49690a380157e5c7a2bb91f1e1853"
+  },
+  "original_feature_provenance": {
+    "method": "resnet_pool",
+    "feature_dimension": 2048,
+    "weights": "IMAGENET1K_V2",
+    "attack_target": "ResNet-50",
+    "success_mask_source": "saved ResNet predictions",
+    "prediction_policy": "record",
+    "original_versions": {
+      "torch": "2.4.1",
+      "torchvision": "0.19.1",
+      "torchattacks": "3.5.1",
+      "scikit-learn": "1.4.2",
+      "scikit-image": "0.23.2",
+      "numpy": "1.26.4",
+      "scipy": "1.13.1"
+    },
+    "corpus_files": {
+      "manifest.csv": "7ec91b9ebb07d83b13413ad8f9d3423f78106cfb06860da474d5c5301ae710da",
+      "variants.csv": "7f522f4ca0a34beac0cdf699e3db368678536be8b82e6f84f31e974e22e561ac",
+      "corpus.json": "8f190b07837ec91d887a6d36f3844f6220c49690a380157e5c7a2bb91f1e1853"
+    },
+    "device": "mps",
+    "torch": "2.4.1",
+    "normalization": "ImageNet normalization once per encoder on unchanged raw pixels",
+    "blocks": {
+      "cal_clean": {
+        "tensor_sha256": "98fbf93a25bc64da8e93ccf0b2286ada7202ba483eb5db56b78d06f5ea91ef7a",
+        "rows": 200,
+        "feature_seconds": 1.5350884168874472,
+        "seconds_per_image": 0.007675442084437236
+      },
+      "dev_apgd": {
+        "tensor_sha256": "3163a3691f1c7cb8da7e4f751175edb44c0c04161103c4fded4ddd5245f224cd",
+        "rows": 100,
+        "feature_seconds": 0.6755846252199262,
+        "seconds_per_image": 0.006755846252199263
+      },
+      "dev_clean": {
+        "tensor_sha256": "370147216617d8e7772032831d6bce7caf6f23e81dc6d4bfab0ea1f17ee9de18",
+        "rows": 100,
+        "feature_seconds": 0.6398495410103351,
+        "seconds_per_image": 0.006398495410103351
+      },
+      "dev_cw": {
+        "tensor_sha256": "7e71416d2144cce97fac433f089562c3543dd2ddd8f80043422abcb163a0ecfa",
+        "rows": 100,
+        "feature_seconds": 0.6295967518817633,
+        "seconds_per_image": 0.006295967518817633
+      },
+      "dev_patch": {
+        "tensor_sha256": "7715a80e53f4c762a1b1b7729bfd1990e49fc3cbc44f400bcaf9afd23adbb0f8",
+        "rows": 100,
+        "feature_seconds": 0.630771541967988,
+        "seconds_per_image": 0.0063077154196798805
+      },
+      "dev_pgd": {
+        "tensor_sha256": "5cb1ba89dc6bfb6ea7252ca6a1188ad1818092e46de523b77563a0d96210a3ad",
+        "rows": 100,
+        "feature_seconds": 0.6375968749634922,
+        "seconds_per_image": 0.006375968749634922
+      },
+      "test_apgd": {
+        "tensor_sha256": "88ff9de36f4287850f3275cb8f1e7d72d5db0db37542dc26932a99660955107b",
+        "rows": 350,
+        "feature_seconds": 2.3016011274885386,
+        "seconds_per_image": 0.006576003221395825
+      },
+      "test_clean": {
+        "tensor_sha256": "6f40f0a8b46037bc36b02b6fda9ef27756e77d56ee31b2410abfa3bdb86c1831",
+        "rows": 350,
+        "feature_seconds": 2.2611560036893934,
+        "seconds_per_image": 0.006460445724826838
+      },
+      "test_cw": {
+        "tensor_sha256": "cd19a8eedb5ba9977b511be69dfdb5c180ad6970962aad10033964e8f716cf99",
+        "rows": 350,
+        "feature_seconds": 2.2382029606960714,
+        "seconds_per_image": 0.006394865601988775
+      },
+      "test_fgsm": {
+        "tensor_sha256": "763d5874774fc40f9f2545f538da5420985da4e17618b834e356caf02a5a4bed",
+        "rows": 350,
+        "feature_seconds": 2.2361059135291725,
+        "seconds_per_image": 0.006388874038654778
+      },
+      "test_gauss2": {
+        "tensor_sha256": "79cebe2b8a7948a766e7f52026c445fead32d526180ef8b34e25b3928e1f85b5",
+        "rows": 100,
+        "feature_seconds": 0.6461915837135166,
+        "seconds_per_image": 0.006461915837135166
+      },
+      "test_gauss4": {
+        "tensor_sha256": "d4bed18033f2547e8788d211a4343187dd882c60fc0ad068069b963916f58e76",
+        "rows": 100,
+        "feature_seconds": 0.6343958338256925,
+        "seconds_per_image": 0.006343958338256925
+      },
+      "test_gauss8": {
+        "tensor_sha256": "25b17f149bb3333f9bdbe1974ac9303d614a84571fe63350bd8fe3be061d25b0",
+        "rows": 100,
+        "feature_seconds": 0.6345587917603552,
+        "seconds_per_image": 0.006345587917603552
+      },
+      "test_patch": {
+        "tensor_sha256": "372bc7952d3f620da4200d57fbc6d9eeb3fcd56d5ef6c224d141317fb3ee68c5",
+        "rows": 350,
+        "feature_seconds": 2.2433112503495067,
+        "seconds_per_image": 0.006409460715284305
+      },
+      "test_pgd": {
+        "tensor_sha256": "49877bee7d76b412fc51e846003dfa91a599d08dbb408351eee32a5a226d5cdb",
+        "rows": 350,
+        "feature_seconds": 2.2288617931772023,
+        "seconds_per_image": 0.006368176551934864
+      },
+      "test_unif8": {
+        "tensor_sha256": "f56d307ab9a182d8e08c414351379ae299128a4d931d4c2d7268733c175db8c5",
+        "rows": 100,
+        "feature_seconds": 0.6426073748152703,
+        "seconds_per_image": 0.006426073748152703
+      },
+      "train_apgd": {
+        "tensor_sha256": "a886453da8791c1c28571eb3d4309aaa801a3517f4e1b9566c600800ccfd2fab",
+        "rows": 350,
+        "feature_seconds": 2.238184459740296,
+        "seconds_per_image": 0.006394812742115131
+      },
+      "train_clean": {
+        "tensor_sha256": "a8e1cb5a81fa71701cfb0562d52229a385ad2608913321d62e7e269e97d241d5",
+        "rows": 350,
+        "feature_seconds": 2.245066376402974,
+        "seconds_per_image": 0.006414475361151355
+      },
+      "train_cw": {
+        "tensor_sha256": "8a23b3e4bab6e72bc77cdb9b134c9db1f768fdc1592e6f30f6b31af7d93f26e8",
+        "rows": 350,
+        "feature_seconds": 2.271491960156709,
+        "seconds_per_image": 0.006489977029019168
+      },
+      "train_patch": {
+        "tensor_sha256": "f16ae257850b40bb7786469a2b05c707dab64cf4f2966ecf0b7bcad8735a6b39",
+        "rows": 350,
+        "feature_seconds": 2.3612525027710944,
+        "seconds_per_image": 0.006746435722203127
+      },
+      "train_pgd": {
+        "tensor_sha256": "04615bd8d80ecddc88e0503c098e7a9a46258647535432b9c116472d7a918e03",
+        "rows": 350,
+        "feature_seconds": 2.3129992512986064,
+        "seconds_per_image": 0.00660856928942459
+      }
+    },
+    "prediction_mismatch_count": 5
+  },
+  "mask_policy": "Original corpus eligibility and successful-attack masks, unchanged",
+  "bootstrap_scope": "Mixture minus matched PGD-only, primary seed only; calibration resampled",
+  "reference": "experiments/slice_belief_analysis.py::SliceBeliefAnalysis.stage2",
+  "reference_code_sha256": "11f4f3aec2f63fdbc8944b41a35cdf2e0f02ebbd403d0838b2af8e5792598308"
+}

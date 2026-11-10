@@ -1,0 +1,202 @@
+{
+  "config": {
+    "seed": 42,
+    "experiment_seeds": [
+      42,
+      123,
+      2026
+    ],
+    "device": "auto",
+    "paths": {
+      "root": "data/raw",
+      "work_dir": "data/processed/slice_belief_fixed1000",
+      "results_dir": "results/slice_belief_fixed1000"
+    },
+    "dataset": {
+      "name": "imagenette",
+      "size": "full",
+      "resize_size": 232,
+      "image_size": 224,
+      "subset_per_class": 100
+    },
+    "partitions_per_class": {
+      "train": 35,
+      "dev": 10,
+      "cal": 20,
+      "test": 35
+    },
+    "panels_per_class": {
+      "noise": 10,
+      "stability": 2
+    },
+    "sigma_selection_images": 50,
+    "model": {
+      "weights": "IMAGENET1K_V2",
+      "target_layer": "layer4.2"
+    },
+    "attack_batch_size": 20,
+    "attacks": {
+      "pgd": {
+        "epsilon": 0.03137254901960784,
+        "alpha": 0.00784313725490196,
+        "steps": 20,
+        "random_start": true
+      },
+      "apgd": {
+        "norm": "Linf",
+        "eps": 0.03137254901960784,
+        "steps": 20,
+        "n_restarts": 1,
+        "seed": 42,
+        "loss": "ce",
+        "eot_iter": 1,
+        "rho": 0.75,
+        "verbose": false
+      },
+      "cw": {
+        "c": 1.0,
+        "kappa": 0.0,
+        "steps": 100,
+        "lr": 0.01
+      },
+      "patch": {
+        "patch_size": 48,
+        "steps": 100,
+        "learning_rate": 0.05
+      },
+      "fgsm": {
+        "eps": 0.03137254901960784
+      }
+    },
+    "partition_attacks": {
+      "train": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch"
+      ],
+      "dev": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch"
+      ],
+      "test": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch",
+        "fgsm"
+      ]
+    },
+    "noise": {
+      "gauss2": {
+        "kind": "gaussian",
+        "scale": 0.00784313725490196
+      },
+      "gauss4": {
+        "kind": "gaussian",
+        "scale": 0.01568627450980392
+      },
+      "gauss8": {
+        "kind": "gaussian",
+        "scale": 0.03137254901960784
+      },
+      "unif8": {
+        "kind": "uniform",
+        "scale": 0.03137254901960784
+      }
+    },
+    "explainers": {
+      "segmentation": {
+        "kernel_size": 5,
+        "max_dist": 200,
+        "ratio": 0.2,
+        "seed": 42
+      },
+      "sigma_values": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "query_batch_size": 250,
+      "use_amp": true,
+      "segmentation_workers": 16,
+      "slice": {
+        "num_perturb": 500,
+        "n_iterations": 1000,
+        "max_steps": 10,
+        "tolerance": 3
+      },
+      "belief": {
+        "num_perturb": 500,
+        "slack": 1e-06
+      },
+      "grid_size": 14,
+      "checkpoint_every": 20
+    },
+    "detector": {
+      "C_grid": [
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ],
+      "max_iter": 5000
+    },
+    "evaluation": {
+      "fpr_targets": [
+        0.01,
+        0.05
+      ],
+      "bootstrap_replicates": 2000,
+      "max_matched_train": 1000
+    },
+    "stage2_folds": {
+      "cw": [
+        "pgd",
+        "apgd",
+        "patch"
+      ],
+      "patch": [
+        "pgd",
+        "apgd",
+        "cw"
+      ],
+      "apgd": [
+        "pgd",
+        "cw",
+        "patch"
+      ]
+    },
+    "budget": {
+      "max_hours": 10,
+      "allow_over_budget": false,
+      "seconds_per_explained_input": 5.6,
+      "corpus_seconds_per_source": 1.5,
+      "explained_per_source": {
+        "train": 4.3,
+        "dev": 4.5,
+        "cal": 1.0,
+        "test": 4.6
+      }
+    },
+    "quality": {
+      "repeats": 5,
+      "aopc_ranks": 5
+    }
+  },
+  "corpus_files": {
+    "manifest.csv": "7ec91b9ebb07d83b13413ad8f9d3423f78106cfb06860da474d5c5301ae710da",
+    "variants.csv": "7f522f4ca0a34beac0cdf699e3db368678536be8b82e6f84f31e974e22e561ac",
+    "corpus.json": "8f190b07837ec91d887a6d36f3844f6220c49690a380157e5c7a2bb91f1e1853"
+  },
+  "method": "resnet_pool",
+  "feature_dimension": 2048,
+  "attack_target": "ResNet-50",
+  "C": 0.01,
+  "dev_auc": 0.9968085106382979
+}

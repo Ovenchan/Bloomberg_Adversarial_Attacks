@@ -1,0 +1,11 @@
+{
+  "stage": "both",
+  "encoder": "resnet",
+  "features": "/Users/baileyyingjin/Documents/School/MSFE/26 Fall/DL/project/Bloomberg_Adversarial_Attacks/results/resnet_representation_fixed1000_complete_backup/features",
+  "reused_features": true,
+  "corpus_files": {
+    "manifest.csv": "7ec91b9ebb07d83b13413ad8f9d3423f78106cfb06860da474d5c5301ae710da",
+    "variants.csv": "7f522f4ca0a34beac0cdf699e3db368678536be8b82e6f84f31e974e22e561ac",
+    "corpus.json": "8f190b07837ec91d887a6d36f3844f6220c49690a380157e5c7a2bb91f1e1853"
+  }
+}

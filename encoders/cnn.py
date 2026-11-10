@@ -43,3 +43,15 @@ class ResNetEncoder(nn.Module, BaseEncoder):
     def target_layer(self, name=DEFAULT_TARGET_LAYER):
         """Input: str backbone module path. Output: nn.Module for explanation."""
         return self.model.get_submodule(name)
+
+    def pooled_features(self, images):
+        """Return pre-fc global-average-pooled features; preserve classifier APIs.
+
+        Accepts the same raw [0,1] pixels as forward(), normalizes once, and
+        retains input gradients. Standard ResNet-50 returns [N, 2048].
+        """
+        x = (images - self.mean) / self.std
+        for name in ("conv1", "bn1", "relu", "maxpool", "layer1", "layer2",
+                     "layer3", "layer4", "avgpool"):
+            x = getattr(self.model, name)(x)
+        return torch.flatten(x, 1)
