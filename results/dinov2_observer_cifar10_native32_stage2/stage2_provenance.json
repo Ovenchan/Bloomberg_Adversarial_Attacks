@@ -1,0 +1,388 @@
+{
+  "config": {
+    "seed": 42,
+    "experiment_seeds": [
+      42,
+      123,
+      2026
+    ],
+    "device": "auto",
+    "paths": {
+      "root": "data/raw",
+      "work_dir": "data/processed/slice_belief_cifar10_native32_fixed1000",
+      "results_dir": "results/slice_belief_cifar10_native32_fixed1000"
+    },
+    "dataset": {
+      "name": "cifar10",
+      "resize_size": 224,
+      "image_size": 224,
+      "attack_size": 32,
+      "subset_per_class": 100
+    },
+    "partitions_per_class": {
+      "train": 35,
+      "dev": 10,
+      "cal": 20,
+      "test": 35
+    },
+    "panels_per_class": {
+      "noise": 10,
+      "stability": 2
+    },
+    "sigma_selection_images": 50,
+    "model": {
+      "weights": "IMAGENET1K_V2",
+      "target_layer": "layer4.2",
+      "head_checkpoint": "data/processed/models/resnet50_cifar10_head.pt"
+    },
+    "attack_batch_size": 20,
+    "attacks": {
+      "pgd": {
+        "epsilon": 0.03137254901960784,
+        "alpha": 0.00784313725490196,
+        "steps": 20,
+        "random_start": true
+      },
+      "apgd": {
+        "norm": "Linf",
+        "eps": 0.03137254901960784,
+        "steps": 20,
+        "n_restarts": 1,
+        "seed": 42,
+        "loss": "ce",
+        "eot_iter": 1,
+        "rho": 0.75,
+        "verbose": false
+      },
+      "cw": {
+        "c": 1.0,
+        "kappa": 0.0,
+        "steps": 100,
+        "lr": 0.01
+      },
+      "patch": {
+        "patch_size": 7,
+        "steps": 100,
+        "learning_rate": 0.05
+      },
+      "fgsm": {
+        "eps": 0.03137254901960784
+      }
+    },
+    "partition_attacks": {
+      "train": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch"
+      ],
+      "dev": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch"
+      ],
+      "test": [
+        "pgd",
+        "apgd",
+        "cw",
+        "patch",
+        "fgsm"
+      ]
+    },
+    "noise": {
+      "gauss2": {
+        "kind": "gaussian",
+        "scale": 0.00784313725490196
+      },
+      "gauss4": {
+        "kind": "gaussian",
+        "scale": 0.01568627450980392
+      },
+      "gauss8": {
+        "kind": "gaussian",
+        "scale": 0.03137254901960784
+      },
+      "unif8": {
+        "kind": "uniform",
+        "scale": 0.03137254901960784
+      }
+    },
+    "explainers": {
+      "segmentation": {
+        "kernel_size": 5,
+        "max_dist": 200,
+        "ratio": 0.2,
+        "seed": 42
+      },
+      "sigma_values": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "query_batch_size": 250,
+      "use_amp": true,
+      "segmentation_workers": 16,
+      "slice": {
+        "num_perturb": 500,
+        "n_iterations": 1000,
+        "max_steps": 10,
+        "tolerance": 3
+      },
+      "belief": {
+        "num_perturb": 500,
+        "slack": 1e-06
+      },
+      "grid_size": 14,
+      "checkpoint_every": 20
+    },
+    "detector": {
+      "C_grid": [
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ],
+      "max_iter": 5000
+    },
+    "evaluation": {
+      "fpr_targets": [
+        0.01,
+        0.05
+      ],
+      "bootstrap_replicates": 2000,
+      "max_matched_train": 1000
+    },
+    "stage2_folds": {
+      "cw": [
+        "pgd",
+        "apgd",
+        "patch"
+      ],
+      "patch": [
+        "pgd",
+        "apgd",
+        "cw"
+      ],
+      "apgd": [
+        "pgd",
+        "cw",
+        "patch"
+      ]
+    },
+    "budget": {
+      "max_hours": 10,
+      "allow_over_budget": false,
+      "seconds_per_explained_input": 5.6,
+      "corpus_seconds_per_source": 1.5,
+      "explained_per_source": {
+        "train": 4.3,
+        "dev": 4.5,
+        "cal": 1.0,
+        "test": 4.6
+      }
+    },
+    "quality": {
+      "repeats": 5,
+      "aopc_ranks": 5
+    }
+  },
+  "method": "dinov2_observer",
+  "attack_target": "ResNet-50",
+  "feature_source": "/Users/zhuhaoyu/Bloomberg_Adversarial_Attacks/results/dinov2_observer_cifar10_native32/features",
+  "feature_hashes": {
+    "train_clean.npz": "fd7263f9271378b17abdeeb175b446737a1c6a553e740ffd979d5e28f660c046",
+    "train_pgd.npz": "71cea0765253bd27234f29aac4e5e96664cb4af99105d1e93125335a22d5e745",
+    "train_apgd.npz": "35c4b591ab37373560db1f4b27fee8bb70f70d94884487189e55e812613df2b7",
+    "train_cw.npz": "3a996c53b11642389caf8fe279d85e7e8a5a606fdf9157f6e34953db3f082474",
+    "train_patch.npz": "64ac308dcb9e2058ee36433c2855dd6054149578c178caf817cad9bdaddf44e0",
+    "dev_clean.npz": "fc42b7a2be686ba7ab9625e8622a51bba7ea05d0e8df2eb00fe7f5fcd3f72013",
+    "dev_pgd.npz": "69722499dda99edb4b14e6be512fdecdbc27e9f1f3f441d7517e6541c4cec257",
+    "dev_apgd.npz": "9253f99cb3687d16d708e6d23cca959bd22ab4a692d961ac5f2ff3410be7626d",
+    "dev_cw.npz": "25500e305d166fb3cb6183f2e2c2f55f397909af5fc030f390905b5bd470bd8a",
+    "dev_patch.npz": "e2b051a94e560c557359fa32873906b39165d5d0b9344af06a0a347a359b122d",
+    "cal_clean.npz": "70daf79589cc65236e768a88d1e4bfbc9335049f1dbfdde261d1888c88e8583c",
+    "test_clean.npz": "653080ab11088fe38d2a1f0ed2781433bd66097965ad2042d23ee54ff05e8b2d",
+    "test_pgd.npz": "68c14fcffb421a2ab9e5702c53efcdf9cdecf5271ae83e4b39e8ce247496bb6e",
+    "test_apgd.npz": "90fe7d883b1919d714f059a5acc89d2dc32e1ef61e27da3b4cb34ef3838e51d2",
+    "test_cw.npz": "19a606bdb1453e4e79e1d2e199a5fe84d72691b04156c786671dff008e5dac05",
+    "test_patch.npz": "ff1e54cae01cccfd7cf205a9829d32051d1cae341c830f96c0989e653e1236cd",
+    "test_fgsm.npz": "5e8a7088c10a4a5fc536ce9bf1311d29def8487d183b8bd892b5be28b5f42e89",
+    "test_gauss2.npz": "14eddea493472e2e6543754ed91bcabbe4c7d6147f719d0b4e633386c3579fdb",
+    "test_gauss4.npz": "9c274c4da20b277bdbd36a58d09d35545753f79398795a1b5ddddfcdbec908d9",
+    "test_gauss8.npz": "5a4d2421fe126ffd636dd4a41acecb2e81f44d390dbaccd95da9dc8d9cf5e844",
+    "test_unif8.npz": "3f0676d7343458740c56fcf1b61d404d97206cfe23d4dbb4f29e4be429225e91"
+  },
+  "corpus_files": {
+    "manifest.csv": "3a61c09ac16209f139b70122651baed9b8bb533fd0ff5c91a95db98cdaa08289",
+    "variants.csv": "c34c18e12108fa97bdd1121400c452a5daf4cb0a61e9736160b1eced4a9ff897",
+    "corpus.json": "140c240362b70034ae2d4fb3b97ded5b56e11c0a5ba0c1f4c44ab65a8c9a553e"
+  },
+  "original_feature_provenance": {
+    "method": "dinov2_observer",
+    "feature_dimension": 384,
+    "weights": "IMAGENET1K_V2",
+    "attack_target": "ResNet-50",
+    "success_mask_source": "saved ResNet predictions",
+    "prediction_policy": "record",
+    "original_versions": {
+      "torch": "2.4.1",
+      "torchvision": "0.19.1",
+      "torchattacks": "3.5.1",
+      "scikit-learn": "1.4.2",
+      "scikit-image": "0.23.2",
+      "numpy": "1.26.4",
+      "scipy": "1.13.1"
+    },
+    "corpus_files": {
+      "manifest.csv": "3a61c09ac16209f139b70122651baed9b8bb533fd0ff5c91a95db98cdaa08289",
+      "variants.csv": "c34c18e12108fa97bdd1121400c452a5daf4cb0a61e9736160b1eced4a9ff897",
+      "corpus.json": "140c240362b70034ae2d4fb3b97ded5b56e11c0a5ba0c1f4c44ab65a8c9a553e"
+    },
+    "device": "mps",
+    "torch": "2.4.1",
+    "normalization": "ImageNet normalization once per encoder on unchanged raw pixels",
+    "blocks": {
+      "cal_clean": {
+        "tensor_sha256": "78ce821fae44cf07483243d934cb6d05fac6a4b26fd18373fd691a2f815bf00f",
+        "rows": 200,
+        "feature_seconds": 1.5682913339696825,
+        "seconds_per_image": 0.007841456669848413
+      },
+      "dev_apgd": {
+        "tensor_sha256": "b9214954dc9be59ae33103452ed7f0113c4a8dfbadb021589eec4fbb8709bbba",
+        "rows": 100,
+        "feature_seconds": 0.7501115830091294,
+        "seconds_per_image": 0.0075011158300912935
+      },
+      "dev_clean": {
+        "tensor_sha256": "da93ae70f66323eba039826d783239b70f02eaf3eb055ec1921a9c0f9057cc26",
+        "rows": 100,
+        "feature_seconds": 0.7556035830348264,
+        "seconds_per_image": 0.007556035830348264
+      },
+      "dev_cw": {
+        "tensor_sha256": "76b5be2c9b488738bc816062a3bb0dcf1c9d2e4ef305e63626bd920e986e1530",
+        "rows": 100,
+        "feature_seconds": 0.7531521260098089,
+        "seconds_per_image": 0.007531521260098088
+      },
+      "dev_patch": {
+        "tensor_sha256": "9d1f8e88809684b1864699d73058ca2fa99fd5b77e26ce161b1efd720996d857",
+        "rows": 100,
+        "feature_seconds": 0.754718457988929,
+        "seconds_per_image": 0.00754718457988929
+      },
+      "dev_pgd": {
+        "tensor_sha256": "af75518119c13e65cf1c3aa9232b0fc931aff517a76cffee53c64e42f2bdc1a1",
+        "rows": 100,
+        "feature_seconds": 0.7570582089829259,
+        "seconds_per_image": 0.007570582089829259
+      },
+      "test_apgd": {
+        "tensor_sha256": "57ed4ffbf32fe436eb23b107c8c88d277ec6f12b2dac87fc7a176fa0e763a6c2",
+        "rows": 350,
+        "feature_seconds": 2.696605957025895,
+        "seconds_per_image": 0.007704588448645414
+      },
+      "test_clean": {
+        "tensor_sha256": "78bc324b6e5429f53a7f101816561d7bfc1f17619633bf64a3096bd6580e516f",
+        "rows": 350,
+        "feature_seconds": 2.6870139579987153,
+        "seconds_per_image": 0.007677182737139187
+      },
+      "test_cw": {
+        "tensor_sha256": "4bef9dd702654904a4a5807031c45bba1180e26ac7b0683f24d2e3922d82919a",
+        "rows": 350,
+        "feature_seconds": 2.7012468739703763,
+        "seconds_per_image": 0.007717848211343932
+      },
+      "test_fgsm": {
+        "tensor_sha256": "f31ff1386f6534ddae51bd262cc934e2f77f00e47cdb3e9aa31519e861d4ebe3",
+        "rows": 350,
+        "feature_seconds": 2.710648664913606,
+        "seconds_per_image": 0.007744710471181731
+      },
+      "test_gauss2": {
+        "tensor_sha256": "bbb18aa5682b3072f9e8415141439ec79838ade70446316e954000097b9f85e5",
+        "rows": 100,
+        "feature_seconds": 0.781727665947983,
+        "seconds_per_image": 0.00781727665947983
+      },
+      "test_gauss4": {
+        "tensor_sha256": "6964370f6fc6ac85348b3328bed3657def62966e6b5a9eb686c893e9e219d683",
+        "rows": 100,
+        "feature_seconds": 0.7771087920118589,
+        "seconds_per_image": 0.007771087920118589
+      },
+      "test_gauss8": {
+        "tensor_sha256": "8ab9e37fa472567a7acd34e9478b7042943db87f977c7049d53d3a65c41dfe3e",
+        "rows": 100,
+        "feature_seconds": 0.7764645410061348,
+        "seconds_per_image": 0.007764645410061348
+      },
+      "test_patch": {
+        "tensor_sha256": "07afb708b6d37898e8ac7804df516aa6ac92fdf8aabf064253b90b16db295a80",
+        "rows": 350,
+        "feature_seconds": 2.7122744180378504,
+        "seconds_per_image": 0.007749355480108144
+      },
+      "test_pgd": {
+        "tensor_sha256": "dd727d975a314ab6d14d342d42ccb02572aafdeb656e97fa141ccd097ba07767",
+        "rows": 350,
+        "feature_seconds": 2.720861333917128,
+        "seconds_per_image": 0.007773889525477509
+      },
+      "test_unif8": {
+        "tensor_sha256": "052e58dcba7f68733f78d39783013cc50df67c02a44b874f9239233cb4c9ecf6",
+        "rows": 100,
+        "feature_seconds": 0.7796126239991281,
+        "seconds_per_image": 0.007796126239991281
+      },
+      "train_apgd": {
+        "tensor_sha256": "e997020e3420faee78a416dc403db81fb0aa3d785b8c89162f49f1950b374716",
+        "rows": 350,
+        "feature_seconds": 2.714884749992052,
+        "seconds_per_image": 0.007756813571405863
+      },
+      "train_clean": {
+        "tensor_sha256": "3304c0992e1b842c4b55423f623071c302c6a423fea8d93246ecf97fa2cf7349",
+        "rows": 350,
+        "feature_seconds": 2.737483958946541,
+        "seconds_per_image": 0.00782138273984726
+      },
+      "train_cw": {
+        "tensor_sha256": "e5df357a8e80db5dd6a1bf58845cbd90b97d2fe760896d632c0aa0c4e0cb8ad9",
+        "rows": 350,
+        "feature_seconds": 2.7396241270180326,
+        "seconds_per_image": 0.007827497505765807
+      },
+      "train_patch": {
+        "tensor_sha256": "d7edc4c1ad8147d3dea02b4399b0a900fbfb7569740e0f7e0d56635fb9802658",
+        "rows": 350,
+        "feature_seconds": 2.7511743340292014,
+        "seconds_per_image": 0.00786049809722629
+      },
+      "train_pgd": {
+        "tensor_sha256": "d8611c83261d417790b389fba6b46f7245b7794e1ebc29a5437e6766d4d62763",
+        "rows": 350,
+        "feature_seconds": 2.7295969180122484,
+        "seconds_per_image": 0.007798848337177852
+      }
+    },
+    "observer": {
+      "model": "dinov2_vits14",
+      "weights_sha256": "3ecd7d7f40ca78a799ca36ef8e09892a961759a972f62485590e9fe167f1aef8",
+      "feature": "CLS embedding",
+      "classification_head": null
+    },
+    "prediction_mismatch_count": 0
+  },
+  "mask_policy": "Original corpus eligibility and successful-attack masks, unchanged",
+  "bootstrap_scope": "Mixture minus matched PGD-only, primary seed only; calibration resampled",
+  "reference": "experiments/slice_belief_analysis.py::SliceBeliefAnalysis.stage2",
+  "reference_code_sha256": "ebc4461a7ad68f75c3eaa2240f8493daf0fe0e9a28c90ac1da0ee800401c8b42"
+}
