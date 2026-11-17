@@ -1,7 +1,7 @@
 """Source-identity manifest and class-stratified partitions for controlled runs.
 
-Every Imagenette validation file receives a globally unique `source_id`
-(dataset, split, relative path, content hash). Partitions are drawn per
+Every Imagenette validation file (or CIFAR-10 official test image) receives a
+globally unique `source_id` (dataset, split, file path or index, content hash). Partitions are drawn per
 class from a seeded permutation (never the first N filesystem entries);
 all variants of a source (attacks, noise, repeated explanations) inherit
 its partition.
@@ -61,8 +61,46 @@ def partition_counts(pool_size, per_class):
     return counts
 
 
+CIFAR10_BATCH = "cifar-10-batches-py/test_batch"
+
+
+def cifar10_test_set(root):
+    """Input: data root. Output: torchvision CIFAR10 official TEST split (PIL images)."""
+    return datasets.CIFAR10(root=root, train=False, download=False)
+
+
+def _imagenette_sources(root, size):
+    """Output: (dict label -> sorted list[Path], callable(item, label) -> identity fields)."""
+    dataset = datasets.Imagenette(root=root, split="val", size=size, download=False)
+    by_class = {}
+    for path, label in dataset._samples:
+        by_class.setdefault(label, []).append(Path(path))
+
+    def describe(path, label):
+        wnid = dataset.wnids[label]
+        relative = f"{wnid}/{path.name}"
+        return {"source_id": f"imagenette2:val:{relative}:{file_hash(path)}", "path": str(path),
+                "wnid": wnid, "class_index": label, "imagenet_label": IMAGENET_LABELS[wnid]}
+    return {label: sorted(paths) for label, paths in by_class.items()}, describe
+
+
+def _cifar10_sources(root):
+    """CIFAR-10 test images keyed by class; `imagenet_label` holds the 10-class head label."""
+    dataset = cifar10_test_set(root)
+    by_class = {}
+    for index, label in enumerate(dataset.targets):
+        by_class.setdefault(int(label), []).append(index)
+
+    def describe(index, label):
+        digest = hashlib.sha1(dataset.data[index].tobytes()).hexdigest()[:HASH_PREFIX_LENGTH]
+        return {"source_id": f"cifar10:test:{index:05d}:{digest}",
+                "path": f"{Path(root) / CIFAR10_BATCH}#{index}",
+                "wnid": dataset.classes[label], "class_index": label, "imagenet_label": label}
+    return by_class, describe
+
+
 def build_manifest(root, per_class, noise_per_class, stability_per_class, seed, size="full",
-                   subset_per_class=None):
+                   subset_per_class=None, dataset_name="imagenette"):
     """Class-stratified partition manifest of the official Imagenette val split.
 
     Input: str root, dict partition -> images per class (int counts or float
@@ -72,12 +110,16 @@ def build_manifest(root, per_class, noise_per_class, stability_per_class, seed, 
         reduced to a fixed seeded subset of that many files (e.g. 100 ->
         a fixed 1,000-file, 10-class subset) and partitions are drawn inside it;
         if None the whole val split is the pool.
+        dataset_name: "imagenette" (official val split) or "cifar10" (official
+        test split, which the CIFAR-10 classifier head never trained on).
     Output: list[dict] rows with MANIFEST_FIELDS (unused images: reserve).
     """
-    dataset = datasets.Imagenette(root=root, split="val", size=size, download=False)
-    by_class = {}
-    for path, label in dataset._samples:
-        by_class.setdefault(label, []).append(Path(path))
+    if dataset_name == "cifar10":
+        by_class, describe = _cifar10_sources(root)
+    elif dataset_name == "imagenette":
+        by_class, describe = _imagenette_sources(root, size)
+    else:
+        raise ValueError(f"Unsupported dataset {dataset_name!r}")
     rows = []
     counters = {name: 0 for name in (*PARTITION_ORDER, RESERVE_PARTITION)}
     rng = np.random.default_rng(seed)
@@ -96,15 +138,9 @@ def build_manifest(root, per_class, noise_per_class, stability_per_class, seed, 
         assigned += [(paths[i], RESERVE_PARTITION) for i in order[cursor:]]
         test_seen = 0
         for path, name in assigned:
-            wnid = dataset.wnids[label]
-            relative = f"{wnid}/{path.name}"
             rows.append(
                 {
-                    "source_id": f"imagenette2:val:{relative}:{file_hash(path)}",
-                    "path": str(path),
-                    "wnid": wnid,
-                    "class_index": label,
-                    "imagenet_label": IMAGENET_LABELS[wnid],
+                    **describe(path, label),
                     "partition": name,
                     "partition_row": -1,
                     "noise_panel": name == "test" and test_seen < noise_per_class,
@@ -162,8 +198,27 @@ def image_transform(resize_size, image_size):
     )
 
 
+def load_native_images(rows):
+    """CIFAR-10 rows only. Output: Tensor[N,3,32,32] uint8, the original stored pixels."""
+    if not rows or not all(r["source_id"].startswith("cifar10:") for r in rows):
+        raise ValueError("Native-resolution loading is defined for CIFAR-10 rows only")
+    dataset = cifar10_test_set(Path(rows[0]["path"].split("#")[0]).parent.parent)
+    pixels = np.stack([dataset.data[int(r["path"].split("#")[1])] for r in rows])   # [N,32,32,3]
+    return torch.from_numpy(pixels).permute(0, 3, 1, 2).contiguous()
+
+
 def load_images(rows, resize_size, image_size):
-    """Input: manifest rows, ints. Output: Tensor[N,3,S,S] uint8 (exact k/255 pixels)."""
-    transform = image_transform(resize_size, image_size)
-    images = [transform(Image.open(r["path"]).convert("RGB")) for r in rows]
+    """Input: manifest rows, ints. Output: Tensor[N,3,S,S] uint8 (exact k/255 pixels).
+
+    CIFAR-10 rows are resized 32 -> (S, S) exactly as the classifier head was
+    trained (utils.datasets.get_cifar10_loader); resize_size is unused for them.
+    """
+    if rows and rows[0]["source_id"].startswith("cifar10:"):
+        root = Path(rows[0]["path"].split("#")[0]).parent.parent
+        dataset = cifar10_test_set(root)
+        transform = transforms.Compose([transforms.Resize((image_size, image_size)), transforms.ToTensor()])
+        images = [transform(dataset[int(r["path"].split("#")[1])][0]) for r in rows]
+    else:
+        transform = image_transform(resize_size, image_size)
+        images = [transform(Image.open(r["path"]).convert("RGB")) for r in rows]
     return (torch.stack(images) * 255).round().to(torch.uint8)

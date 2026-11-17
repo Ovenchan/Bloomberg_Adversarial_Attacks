@@ -22,8 +22,10 @@ from experiments.slice_belief_analysis import SliceBeliefAnalysis, PRIMARY_ALPHA
 from utils.controlled_data import derive_seed
 from detectors.logistic import GradCAMLogisticDetector
 from encoders.cnn import ResNetEncoder
+from models.controlled_classifier import build_classifier
 
 METHOD = "resnet_pool"
+FEATURE_DIMENSIONS = {METHOD: 2048, "dinov2_observer": 384}   # Stage 2 supports both feature caches
 
 
 def sha(path):
@@ -137,8 +139,7 @@ def extract(corpus, destination, device, batch_size, model=None, observer=None,
     if prediction_policy not in ("strict", "record"):
         raise ValueError("prediction_policy must be strict or record")
     mismatches = []
-    model = (model if model is not None else ResNetEncoder(
-        weights=corpus.config["model"]["weights"])).to(device).eval()
+    model = (model if model is not None else build_classifier(corpus.config)).to(device).eval()
     for parameter in model.parameters():
         parameter.requires_grad_(False)
     method = METHOD if observer is None else "dinov2_observer"
@@ -219,8 +220,8 @@ def extract(corpus, destination, device, batch_size, model=None, observer=None,
     (destination / "provenance.json").write_text(json.dumps(provenance, indent=2))
 
 
-def evaluate(corpus, features_dir, output):
-    """Stage 1: PGD-only detector, development tuning, frozen clean thresholds."""
+def evaluate(corpus, features_dir, output, train_attack="pgd"):
+    """Stage 1: single-attack detector (PGD by default), development tuning, frozen clean thresholds."""
     cfg = corpus.config
     bank = {}
     provenance = json.loads((features_dir / "provenance.json").read_text())
@@ -242,10 +243,13 @@ def evaluate(corpus, features_dir, output):
                     raise ValueError("Invalid feature matrix")
                 bank[key] = X[np.array([r["explain"] for r in rows])]
         return bank[key]
-    neg, pos = features("train", "clean"), features("train", "pgd")
-    dev_neg, dev_pos = features("dev", "clean"), features("dev", "pgd")
+    for partition in ("train", "dev"):
+        if train_attack not in cfg["partition_attacks"][partition]:
+            raise ValueError(f"Attack {train_attack!r} is not available in the {partition} partition")
+    neg, pos = features("train", "clean"), features("train", train_attack)
+    dev_neg, dev_pos = features("dev", "clean"), features("dev", train_attack)
     if not all(len(x) for x in (neg, pos, dev_neg, dev_pos)):
-        raise ValueError("Training/development require clean and successful PGD samples")
+        raise ValueError(f"Training/development require clean and successful {train_attack} samples")
     best = None
     for C in cfg["detector"]["C_grid"]:
         detector = GradCAMLogisticDetector(C=C, seed=cfg["seed"], max_iter=cfg["detector"]["max_iter"])
@@ -306,6 +310,7 @@ def evaluate(corpus, features_dir, output):
     (output / "evaluation.json").write_text(json.dumps({"config": cfg, "corpus_files": corpus.fingerprint,
                                                         "method": method, "feature_dimension": dimension,
                                                         "attack_target": "ResNet-50",
+                                                        "train_attack": train_attack,
                                                         "C": C, "dev_auc": dev_auc}, indent=2))
     joblib.dump(detector, output / "detector.joblib")
 
@@ -321,8 +326,10 @@ class RepresentationBank:
                                     'with --encoder resnet and a new output directory, then pass its '
                                     'features/ path via --features. No SLICE/BELIEF rerun is needed.')
         self.provenance = json.loads((self.directory / 'provenance.json').read_text())
-        if self.provenance['method'] != 'resnet_pool' or self.provenance['feature_dimension'] != 2048:
-            raise ValueError('Stage 2 requires cached ResNet pooled features')
+        self.method = self.provenance['method']
+        self.dimension = FEATURE_DIMENSIONS.get(self.method)
+        if self.dimension is None or self.provenance['feature_dimension'] != self.dimension:
+            raise ValueError('Stage 2 requires cached ResNet pooled or DINOv2 observer features')
         if self.provenance['corpus_files'] != corpus.fingerprint:
             raise ValueError('Feature corpus metadata differs from the supplied corpus')
         self.cache = {}
@@ -333,7 +340,7 @@ class RepresentationBank:
             with np.load(path, allow_pickle=False) as archive:
                 features = archive['features']
                 ids = archive['source_ids']
-                if features.shape != (len(rows), 2048) or not np.isfinite(features).all():
+                if features.shape != (len(rows), self.dimension) or not np.isfinite(features).all():
                     raise ValueError(f'Invalid feature matrix: {path}')
                 if not np.array_equal(ids, [r['source_id'] for r in rows]):
                     raise ValueError(f'Feature source order mismatch: {path}')
@@ -343,7 +350,7 @@ class RepresentationBank:
             self.feature_hashes[path.name] = sha(path)
 
     def features(self, partition, variant, method):
-        if method != 'resnet_pool':
+        if method != self.method:
             raise ValueError('Unknown representation method')
         return self.cache[(partition, variant)]
 
@@ -358,7 +365,7 @@ class ResNetStage2(SliceBeliefAnalysis):
         self.config = config
         self.corpus = Corpus(config)
         self.bank = RepresentationBank(self.corpus, feature_dir)
-        self.methods = ('resnet_pool',)
+        self.methods = (self.bank.method,)
         self.alphas = config['evaluation']['fpr_targets']
         self.test_attacks = config['partition_attacks']['test']
         self.noise = list(config['noise'])
@@ -387,7 +394,7 @@ class ResNetStage2(SliceBeliefAnalysis):
         self.noise_rows.extend({**context, **row} for row in noise_rows)
         for partition, variant, scores in [('cal', 'clean', cal_scores)] + [
                 ('test', variant, scores) for variant, scores in raw.items()]:
-            _, ids, _ = self.bank.features(partition, variant, 'resnet_pool')
+            _, ids, _ = self.bank.features(partition, variant, self.bank.method)
             self.score_rows.extend({**context, 'partition': partition, 'variant': variant,
                                    'source_id': str(source), 'score': float(score)}
                                   for source, score in zip(ids, scores))
@@ -399,7 +406,7 @@ class ResNetStage2(SliceBeliefAnalysis):
         write_csv(self.tables / 'stage2_noise.csv', self.noise_rows)
         (self.tables / 'stage2_thresholds.json').write_text(json.dumps(self.threshold_rows, indent=2))
         (self.tables / 'stage2_provenance.json').write_text(json.dumps({
-            'config': self.config, 'method': 'resnet_pool', 'attack_target': 'ResNet-50',
+            'config': self.config, 'method': self.bank.method, 'attack_target': 'ResNet-50',
             'feature_source': str(self.bank.directory.resolve()), 'feature_hashes': self.bank.feature_hashes,
             'corpus_files': self.corpus.fingerprint,
             'original_feature_provenance': self.bank.provenance,
@@ -494,11 +501,14 @@ def summarize_stages(output, config):
     metrics = ['auc', 'tpr@0.01', 'tpr@0.05', 'clean_fpr@0.01', 'clean_fpr@0.05',
                'undetected@0.01', 'undetected@0.05', 'test_roc_tpr@0.01', 'test_roc_tpr@0.05']
     noise1 = read('stage1_noise.csv')
+    evaluation_path = output / 'evaluation.json'
+    train_attack = (json.loads(evaluation_path.read_text()).get('train_attack', 'pgd')
+                    if evaluation_path.exists() else 'pgd')
     for row in read('stage1_detection.csv'):
-        entry = dict(stage='stage1', arm='pgd_only', holdout='', training_attacks='pgd',
+        entry = dict(stage='stage1', arm=f'{train_attack}_only', holdout='', training_attacks=train_attack,
                      method=row['method'], attack=row['attack'], is_holdout='', seeds=1,
                      num_train_clean=len(corpus.selected(('train', 'clean'))),
-                     num_train_adversarial=len(corpus.selected(('train', 'pgd'))))
+                     num_train_adversarial=len(corpus.selected(('train', train_attack))))
         for k in ('num_clean', 'num_successful', 'num_eligible'):
             entry[k] = int(row[k])
         entry['asr'] = entry['num_successful'] / entry['num_eligible'] if entry['num_eligible'] else float('nan')
@@ -549,7 +559,7 @@ the feature provenance. No attacks or SLICE/BELIEF explanations are regenerated.
 - Source partitions: {counts['train']} train, {counts['dev']} development,
   {counts['cal']} clean calibration, {counts['test']} test; all variants stay with their source.
 - Detector: training-only StandardScaler + logistic regression; C selected on development AUC.
-- Stage 1: all clean training samples and successful PGD examples.
+- Stage 1: all clean training samples and successful {train_attack.upper()} examples.
 - Stage 2: fresh matched PGD-only and mixture detectors, each with N clean + N attacked
   samples from identical sources. The held-out family never enters fitting or tuning.
 - Stage 2 seeds: {config.get('experiment_seeds', [])}. Thresholds are independently calibrated
@@ -583,7 +593,7 @@ models are retained in this folder. Stage 2 paired-bootstrap gains are in
     (output / 'SETUP.md').write_text(setup)
     lines = ['# Main results', '', 'Results from the shared fixed-1,000-image corpus. All TPRs below use the',
              '5% clean-calibration target; actual test false-alarm rates can differ.', '',
-             '## Stage 1: PGD-only training', '',
+             f'## Stage 1: {train_attack.upper()}-only training', '',
              '| Test attack | AUC | Detection rate | Clean false alarms | Mean noise false alarms |',
              '| --- | ---: | ---: | ---: | ---: |']
     for r in combined:
@@ -617,18 +627,20 @@ def main():
     parser.add_argument("--encoder", choices=("resnet", "dinov2"), default="resnet",
                         help="Feature encoder only; attacks and success masks remain ResNet-based")
     parser.add_argument("--stage", choices=("stage1", "stage2", "both"), default="stage1",
-                        help="Run Stage 1, Stage 2, or both after a single feature extraction (Stage 2: ResNet only)")
+                        help="Run Stage 1, Stage 2, or both after a single feature extraction")
     parser.add_argument("--features", help="Reuse an existing features/ directory; skips backbone inference")
     parser.add_argument("--device", default="cpu", help="cpu, cuda or mps")
     parser.add_argument("--batch-size", type=int, default=20)
     parser.add_argument("--prediction-policy", choices=("strict", "record"), default="strict",
                         help="strict aborts on prediction differences; record audits them and keeps original masks")
+    parser.add_argument("--train-attack", default="pgd",
+                        help="Stage 1 detector training/tuning attack (default pgd); test attacks are unchanged")
     parser.add_argument("--check", action="store_true", help="Check required corpus artifacts without loading a model")
     args = parser.parse_args()
     if args.batch_size < 1:
         parser.error("--batch-size must be positive")
-    if args.encoder != "resnet" and args.stage != "stage1":
-        parser.error("Stage 2 currently supports --encoder resnet; DINOv2 remains Stage 1")
+    if args.train_attack != "pgd" and args.stage != "stage1":
+        parser.error("--train-attack applies to Stage 1 only; Stage 2 defines its own training arms")
     cfg = yaml.safe_load(Path(args.config).read_text())
     corpus = Corpus(cfg)
     if args.check:
@@ -656,7 +668,7 @@ def main():
         extract(corpus, feature_dir, torch.device(args.device), args.batch_size, observer=observer,
                 prediction_policy=args.prediction_policy)
     if args.stage in ("stage1", "both"):
-        evaluate(corpus, feature_dir, output)
+        evaluate(corpus, feature_dir, output, train_attack=args.train_attack)
     if args.stage in ("stage2", "both"):
         ResNetStage2(cfg, feature_dir, output, existing_output=True).run()
     (output / "run.json").write_text(json.dumps({"stage": args.stage, "encoder": args.encoder,

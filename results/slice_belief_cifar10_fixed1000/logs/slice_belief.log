@@ -1,0 +1,38 @@
+[13:53:36] === stage manifest ===
+[13:53:37] budget: ~4165 explained inputs, projected 7.2 h (limit 10 h)
+[13:53:37] manifest: {'train': 350, 'dev': 100, 'cal': 200, 'test': 350, 'reserve': 9000}
+[13:53:38] === stage corpus ===
+[13:53:43] train: clean accuracy 0.8829 (309/350)
+[13:55:28] train/pgd: generated in 104s
+[13:55:30] train/pgd: ASR 309/309 = 1.0000
+[13:57:17] train/apgd: generated in 106s
+[13:57:20] train/apgd: ASR 309/309 = 1.0000
+[13:58:17] train/cw: generated in 57s
+[13:58:19] train/cw: ASR 226/309 = 0.7314
+[14:09:04] train/patch: generated in 645s
+[14:09:08] train/patch: ASR 300/309 = 0.9709
+[14:09:09] dev: clean accuracy 0.9100 (91/100)
+[14:09:51] dev/pgd: generated in 42s
+[14:09:52] dev/pgd: ASR 91/91 = 1.0000
+[14:10:32] dev/apgd: generated in 41s
+[14:10:33] dev/apgd: ASR 91/91 = 1.0000
+[14:10:54] dev/cw: generated in 21s
+[14:10:55] dev/cw: ASR 69/91 = 0.7582
+[14:14:09] dev/patch: generated in 194s
+[14:14:10] dev/patch: ASR 85/91 = 0.9341
+[14:14:13] cal: clean accuracy 0.9350 (187/200)
+[14:14:16] test: clean accuracy 0.9057 (317/350)
+[14:16:27] test/pgd: generated in 131s
+[14:16:30] test/pgd: ASR 317/317 = 1.0000
+[14:18:36] test/apgd: generated in 126s
+[14:18:38] test/apgd: ASR 317/317 = 1.0000
+[14:19:33] test/cw: generated in 55s
+[14:19:36] test/cw: ASR 237/317 = 0.7476
+[14:28:00] test/patch: generated in 505s
+[14:28:03] test/patch: ASR 311/317 = 0.9811
+[14:28:08] test/fgsm: generated in 5s
+[14:28:10] test/fgsm: ASR 209/317 = 0.6593
+[14:28:11] test/gauss2: prediction changed on 0.110
+[14:28:12] test/gauss4: prediction changed on 0.210
+[14:28:13] test/gauss8: prediction changed on 0.260
+[14:28:14] test/unif8: prediction changed on 0.190

@@ -26,10 +26,11 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 import yaml
+from torch import nn
 
 from attacks.factory import build_attack
-from encoders.cnn import ResNetEncoder
 from explainers.belief import BeliefExplainer
 from explainers.gradcam import GradCAMExplainer
 from explainers.perturbation import (
@@ -42,21 +43,21 @@ from explainers.perturbation import (
 from explainers.slice import SliceExplainer
 from explainers.superpixel_maps import superpixel_means
 from explainers.vectorizer import GradCAMVectorizer
+from models.controlled_classifier import build_classifier, dataset_name, in_dataset_labels
 from utils.controlled_data import (
     PARTITION_ORDER,
     build_manifest,
     derive_seed,
     load_images,
+    load_native_images,
     partition_rows,
     read_manifest,
     write_manifest,
 )
-from utils.gradcam_data import IMAGENET_LABELS
 
 CLEAN = "clean"
 JSON_INDENT = 2
 PREDICT_BATCH = 100
-IMAGENETTE_CLASSES = sorted(IMAGENET_LABELS.values())
 VARIANT_FIELDS = (
     "partition", "variant", "tensor_index", "source_id", "class_index", "imagenet_label",
     "clean_pred", "pred", "eligible", "success", "explain", "linf", "l2",
@@ -68,13 +69,47 @@ STAGES = ("manifest", "corpus", "segment", "sigma", "explain", "repeats", "fidel
 def resolve_device(requested):
     """Input: 'auto' or device str. Output: torch.device."""
     if requested == "auto":
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        return torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     return torch.device(requested)
 
 
 def to_float(images):
     """Input: uint8 or float Tensor[N,3,H,W]. Output: float32 Tensor in [0,1]."""
     return images.float() / 255.0 if images.dtype == torch.uint8 else images.float()
+
+
+class Upsampled(nn.Module):
+    """Classifier evaluated on native-resolution pixels: bilinear resize to the model size first.
+
+    Used when dataset.attack_size is set (CIFAR-10 native 32x32): attacks and noise are
+    optimized/added on the original pixel grid, so perturbations are smoothed by the same
+    resize as the image itself. The stored 224x224 tensor is exactly upsample(x_native).
+    """
+
+    def __init__(self, model, size):
+        super().__init__()
+        self.model, self.size = model, size
+        # nn.Module starts in training mode; torchattacks restores the wrapper's mode after
+        # each attack, which would switch the frozen ResNet's BatchNorm to batch statistics.
+        self.eval()
+
+    def train(self, mode=True):
+        """The wrapped classifier is frozen: never allow training mode (BatchNorm stays fixed)."""
+        if mode:
+            raise RuntimeError("Upsampled classifier wrapper must stay in eval mode")
+        return super().train(False)
+
+    def forward(self, images):
+        return self.model(upsample(images, self.size))
+
+
+def upsample(images, size):
+    """Input: float Tensor[N,3,h,w] in [0,1]. Output: Tensor[N,3,size,size] (bilinear, no corner alignment)."""
+    if images.shape[-1] == size and images.shape[-2] == size:
+        return images
+    return F.interpolate(images, size=(size, size), mode="bilinear", align_corners=False).clamp(0, 1)
 
 
 def tensor_sha(tensor):
@@ -105,6 +140,9 @@ class SliceBeliefStudy:
         (self.results / "logs").mkdir(parents=True, exist_ok=True)
         self._model = None
         self._sigma = None
+        self.in_dataset = in_dataset_labels(config)   # Imagenette: 10 of 1,000 ImageNet labels; CIFAR-10: all
+        # Native-resolution threat model (CIFAR-10): attack/noise on the original grid, then resize.
+        self.attack_size = config["dataset"].get("attack_size")
         torch.backends.cudnn.benchmark = True
 
     # ---------------------------------------------------------------- utils
@@ -118,12 +156,9 @@ class SliceBeliefStudy:
 
     @property
     def model(self):
-        """Output: frozen eval-mode ResNetEncoder (raw-pixel input) on device."""
+        """Output: frozen eval-mode ResNetEncoder (raw-pixel input; CIFAR-10 head if configured) on device."""
         if self._model is None:
-            model = ResNetEncoder(weights=self.config["model"]["weights"]).to(self.device).eval()
-            for parameter in model.parameters():
-                parameter.requires_grad_(False)
-            self._model = model
+            self._model = build_classifier(self.config).to(self.device).eval()
         return self._model
 
     def manifest(self):
@@ -180,8 +215,8 @@ class SliceBeliefStudy:
         cfg = self.config
         rows = build_manifest(
             cfg["paths"]["root"], cfg["partitions_per_class"], cfg["panels_per_class"]["noise"],
-            cfg["panels_per_class"]["stability"], self.seed, cfg["dataset"]["size"],
-            cfg["dataset"].get("subset_per_class"),
+            cfg["panels_per_class"]["stability"], self.seed, cfg["dataset"].get("size", "full"),
+            cfg["dataset"].get("subset_per_class"), dataset_name=dataset_name(cfg),
         )
         self.check_budget(rows)
         path = self.work / "manifest.csv"
@@ -239,8 +274,16 @@ class SliceBeliefStudy:
             rows = partition_rows(manifest, partition)
             labels = torch.tensor([r["imagenet_label"] for r in rows])
             clean_path = self.tensor_path(partition, CLEAN)
+            native = None
+            if self.attack_size:
+                native = load_native_images(rows)
+                if native.shape[-1] != self.attack_size:
+                    raise ValueError("dataset.attack_size differs from the native image size")
             if clean_path.exists():
                 clean = self.load_tensor(partition, CLEAN)
+            elif native is not None:
+                clean = upsample(to_float(native), cfg["dataset"]["image_size"])   # float32, what the model sees
+                torch.save(clean, clean_path)
             else:
                 clean = load_images(rows, cfg["dataset"]["resize_size"], cfg["dataset"]["image_size"])
                 torch.save(clean, clean_path)
@@ -252,7 +295,7 @@ class SliceBeliefStudy:
                                      clean_max, clean_entropy, eligible, np.zeros(len(rows), bool),
                                      np.ones(len(rows), bool), torch.zeros(len(rows)), torch.zeros(len(rows)))
             for attack in cfg["partition_attacks"].get(partition, []):
-                adversarial = self._attack(partition, attack, rows, clean, labels)
+                adversarial = self._attack(partition, attack, rows, clean if native is None else native, labels)
                 pred, maxima, entropy = self.predict(adversarial)
                 success = eligible & (pred != labels.numpy())
                 delta = (adversarial - to_float(clean)).flatten(1)
@@ -264,7 +307,8 @@ class SliceBeliefStudy:
             if partition == "test":
                 panel = np.array([i for i, r in enumerate(rows) if r["noise_panel"]])
                 for name, spec in cfg["noise"].items():
-                    noisy = self._noise(name, spec, [rows[i] for i in panel], clean[panel])
+                    noisy = self._noise(name, spec, [rows[i] for i in panel],
+                                        clean[panel] if native is None else native[panel])
                     pred, maxima, entropy = self.predict(noisy)
                     delta = (noisy - to_float(clean[panel])).flatten(1)
                     provenance["tensors"][f"test_{name}"] = tensor_sha(noisy)
@@ -296,23 +340,25 @@ class SliceBeliefStudy:
                 "pred": int(pred[k]), "eligible": bool(eligible[k]), "success": bool(success[k]),
                 "explain": bool(explain[k]), "linf": float(linf[k]), "l2": float(l2[k]),
                 "max_prob": float(max_prob[k]), "entropy": float(entropy[k]),
-                "in_imagenette": int(pred[k]) in IMAGENETTE_CLASSES,
+                "in_imagenette": int(pred[k]) in self.in_dataset,   # prediction within the dataset's classes
                 "noise_panel": row["noise_panel"], "stability_panel": row["stability_panel"],
             }
             for k, (i, row) in enumerate(zip(indices, rows))
         ]
 
     def _attack(self, partition, attack, rows, clean, labels):
-        """Input: partition/attack names, rows, uint8 clean, ImageNet labels.
+        """Input: partition/attack names, rows, uint8 clean (native-resolution when
+        dataset.attack_size is set), classifier labels.
 
-        Output: Tensor[N,3,H,W] float32 adversarial images (cached on disk).
+        Output: Tensor[N,3,H,W] float32 adversarial images at the model size (cached on disk).
         """
         path = self.tensor_path(partition, attack)
         if path.exists():
             return self.load_tensor(partition, attack)
         cfg = self.config
         params = cfg["attacks"][attack]
-        fn = build_attack(attack, self.model, params)
+        target_model = Upsampled(self.model, cfg["dataset"]["image_size"]) if self.attack_size else self.model
+        fn = build_attack(attack, target_model, params)
         batch = cfg["attack_batch_size"]
         outputs = []
         started = time.perf_counter()
@@ -322,7 +368,7 @@ class SliceBeliefStudy:
             target = labels[start:start + batch].to(self.device)
             if attack == "patch":
                 size = params["patch_size"]
-                high = cfg["dataset"]["image_size"] - size + 1
+                high = (self.attack_size or cfg["dataset"]["image_size"]) - size + 1
                 locations = np.array([
                     np.random.default_rng(derive_seed(self.seed, r["source_id"], "patch_location")).integers(0, high, 2)
                     for r in rows[start:start + batch]
@@ -330,7 +376,9 @@ class SliceBeliefStudy:
                 adversarial = fn(images, target, top_positions=locations[:, 0], left_positions=locations[:, 1])
             else:
                 adversarial = fn(images, target)
-            outputs.append(adversarial.detach().float().cpu())
+            outputs.append(upsample(adversarial.detach().float(), cfg["dataset"]["image_size"]).cpu())
+            if self.model.training:
+                raise RuntimeError(f"{attack} left the classifier in training mode")
         adversarial = torch.cat(outputs)
         torch.save(adversarial, path)
         self.log(f"{partition}/{attack}: generated in {time.perf_counter() - started:.0f}s")
@@ -350,7 +398,7 @@ class SliceBeliefStudy:
             else:
                 noise = (torch.rand(image.shape, generator=generator) * 2 - 1) * spec["scale"]
             noisy.append((image + noise).clamp(0, 1))
-        noisy = torch.stack(noisy)
+        noisy = upsample(torch.stack(noisy), self.config["dataset"]["image_size"])
         torch.save(noisy, path)
         return noisy
 

@@ -1,0 +1,5 @@
+{
+  "stage": "stage1",
+  "train_attack": "cw",
+  "config": "configs/experiments/slice_belief_imagenette_fixed1000.yaml"
+}
