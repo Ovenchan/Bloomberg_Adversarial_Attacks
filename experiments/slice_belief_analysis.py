@@ -121,12 +121,13 @@ class FeatureBank:
 class SliceBeliefAnalysis:
     """Input: config dict. Output: runner writing all analysis tables."""
 
-    def __init__(self, config):
-        """Input: dict. Output: None."""
+    def __init__(self, config, train_attack="pgd", tables_dir=None):
+        """Input: dict, Stage 1 training attack (default pgd), optional output table folder. Output: None."""
         self.config = config
+        self.train_attack = train_attack
         self.study = SliceBeliefStudy(config)
         self.bank = FeatureBank(self.study)
-        self.tables = self.study.results / "tables"
+        self.tables = Path(tables_dir) if tables_dir else self.study.results / "tables"
         self.tables.mkdir(parents=True, exist_ok=True)
         self.alphas = config["evaluation"]["fpr_targets"]
         self.test_attacks = config["partition_attacks"]["test"]
@@ -249,9 +250,10 @@ class SliceBeliefAnalysis:
         """Output: dict method -> fitted detector; stage1_*.csv tables."""
         detection, noise, boot_inputs, detectors = [], [], {}, {}
         for method in METHODS:
-            pos = self.bank.features("train", "pgd", method)[0]
+            pos = self.bank.features("train", self.train_attack, method)[0]
             neg = self.bank.features("train", CLEAN, method)[0]
-            dev = [(self.bank.features("dev", CLEAN, method)[0], self.bank.features("dev", "pgd", method)[0])]
+            dev = [(self.bank.features("dev", CLEAN, method)[0],
+                    self.bank.features("dev", self.train_attack, method)[0])]
             model, C, dev_auc = self.detector(pos, neg, dev, self.config["seed"])
             thresholds, cal_scores = self.thresholds(model, method)
             rows, noise_rows, raw = self.evaluate(model, method, thresholds, self.test_attacks)
@@ -465,8 +467,31 @@ def main():
     """Input: CLI --config. Output: None."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--config", required=True)
+    parser.add_argument("--train-attack", default="pgd",
+                        help="Stage 1 detector training/tuning attack. Non-PGD runs only Stage 1 and need --tables-dir")
+    parser.add_argument("--tables-dir", help="Write tables here instead of <results_dir>/tables")
     args = parser.parse_args()
-    SliceBeliefAnalysis(yaml.safe_load(Path(args.config).read_text())).run()
+    config = yaml.safe_load(Path(args.config).read_text())
+    if args.train_attack == "pgd" and not args.tables_dir:
+        SliceBeliefAnalysis(config).run()
+        return
+    if not args.tables_dir:
+        parser.error("--train-attack other than pgd requires a separate --tables-dir")
+    for partition in ("train", "dev"):
+        if args.train_attack not in config["partition_attacks"][partition]:
+            parser.error(f"{args.train_attack} is not available in the {partition} partition")
+    tables = Path(args.tables_dir)
+    if tables.resolve() == (Path(config["paths"]["results_dir"]) / "tables").resolve():
+        parser.error("--tables-dir must differ from the original analysis tables")
+    if tables.exists() and any(tables.iterdir()):
+        parser.error(f"{tables} already contains files; choose a new folder")
+    analysis = SliceBeliefAnalysis(config, train_attack=args.train_attack, tables_dir=tables)
+    analysis.study.results = tables          # keep the original (committed) study log untouched
+    (tables / "logs").mkdir(parents=True, exist_ok=True)
+    analysis.stage1()
+    (tables / "run.json").write_text(json.dumps({"stage": "stage1", "train_attack": args.train_attack,
+                                                 "config": args.config}, indent=2))
+    analysis.study.log(f"stage1 ({args.train_attack}-trained) tables written to {tables}")
 
 
 if __name__ == "__main__":

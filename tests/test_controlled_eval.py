@@ -112,3 +112,98 @@ def test_full_val_fractions_assign_every_file():
     """Fractional partitions over the whole val split leave no reserve images."""
     rows = build_manifest("data/raw", {"train": 0.35, "dev": 0.10, "cal": 0.20, "test": 0.35}, 1, 1, seed=42)
     assert len(rows) == 3925 and not any(r["partition"] == "reserve" for r in rows)
+
+
+CIFAR10_TEST_BATCH = Path("data/raw/cifar-10-batches-py/test_batch")
+FIXED1000_MANIFEST = Path("data/processed/slice_belief_fixed1000/manifest.csv")
+
+
+@pytest.mark.skipif(not (IMAGENETTE_ROOT.is_dir() and FIXED1000_MANIFEST.is_file()),
+                    reason="Imagenette fixed-1,000 corpus not available")
+def test_generalized_manifest_reproduces_saved_imagenette_split():
+    """Adding CIFAR-10 support must not change a single Imagenette source or partition."""
+    from utils.controlled_data import read_manifest
+    sizes = {"train": 35, "dev": 10, "cal": 20, "test": 35}
+    rows = build_manifest("data/raw", sizes, 10, 2, seed=42, subset_per_class=100)
+    saved = read_manifest(FIXED1000_MANIFEST)
+    key = lambda r: (r["source_id"], r["partition"], r["partition_row"], r["imagenet_label"],
+                     r["noise_panel"], r["stability_panel"])
+    assert sorted(map(key, rows)) == sorted(map(key, saved))
+
+
+@pytest.mark.skipif(not CIFAR10_TEST_BATCH.is_file(), reason="CIFAR-10 not available")
+def test_cifar10_manifest_uses_test_split_balanced_and_reproducible():
+    """CIFAR-10 fixed subset: 1,000 official-TEST sources, 100 per class, labels = head labels."""
+    from utils.controlled_data import load_images
+    sizes = {"train": 35, "dev": 10, "cal": 20, "test": 35}
+    rows = build_manifest("data/raw", sizes, 10, 2, seed=42, subset_per_class=100, dataset_name="cifar10")
+    used = [r for r in rows if r["partition"] != "reserve"]
+    assert len(rows) == 10000 and len(used) == 1000
+    assert all(r["source_id"].startswith("cifar10:test:") for r in rows)
+    assert len({r["source_id"] for r in rows}) == len(rows)
+    assert set(Counter(r["class_index"] for r in used).values()) == {100}
+    assert all(r["imagenet_label"] == r["class_index"] for r in rows)
+    again = build_manifest("data/raw", sizes, 10, 2, seed=42, subset_per_class=100, dataset_name="cifar10")
+    assert [r["source_id"] for r in again] == [r["source_id"] for r in rows]
+    images = load_images(used[:3], 224, 224)
+    assert images.shape == (3, 3, 224, 224) and images.dtype.is_floating_point is False
+
+
+@pytest.mark.skipif(not Path("data/processed/models/resnet50_cifar10_head.pt").is_file(),
+                    reason="CIFAR-10 head not available")
+def test_cifar10_classifier_outputs_ten_classes_and_keeps_pooled_features():
+    """The controlled classifier attaches the trained 10-class head without touching the backbone."""
+    import torch
+    from models.controlled_classifier import build_classifier, in_dataset_labels
+    config = {"dataset": {"name": "cifar10", "image_size": 224},
+              "model": {"weights": "IMAGENET1K_V2",
+                        "head_checkpoint": "data/processed/models/resnet50_cifar10_head.pt"}}
+    model = build_classifier(config)
+    x = torch.rand(2, 3, 224, 224)
+    with torch.no_grad():
+        assert model(x).shape == (2, 10)
+        assert model.pooled_features(x).shape == (2, 2048)
+        assert torch.allclose(model.model.fc(model.pooled_features(x)), model(x), atol=1e-4)
+    assert not any(p.requires_grad for p in model.parameters())
+    assert in_dataset_labels(config) == frozenset(range(10))
+
+
+def test_native_resolution_wrapper_matches_stored_upsample():
+    """Attacking Upsampled(model) on 32x32 pixels is the same as the model on the stored 224 tensor."""
+    import torch
+    from experiments.slice_belief import Upsampled, upsample
+    torch.manual_seed(0)
+    model = torch.nn.Sequential(torch.nn.Flatten(), torch.nn.Linear(3 * 224 * 224, 10))
+    native = torch.rand(4, 3, 32, 32)
+    stored = upsample(native, 224)
+    assert stored.shape == (4, 3, 224, 224) and 0 <= stored.min() and stored.max() <= 1
+    assert torch.allclose(Upsampled(model, 224)(native), model(stored))
+    # Regression: a fresh nn.Module defaults to training mode; the wrapper must not, or
+    # torchattacks' mode restore flips the frozen ResNet's BatchNorm into batch statistics.
+    bn_model = torch.nn.Sequential(torch.nn.BatchNorm2d(3), torch.nn.Flatten(),
+                                   torch.nn.Linear(3 * 224 * 224, 10)).eval()
+    wrapped = Upsampled(bn_model, 224)
+    assert not wrapped.training and not bn_model.training
+    wrapped.train(False)
+    with pytest.raises(RuntimeError):
+        wrapped.train()
+    assert not bn_model.training
+    same = torch.rand(2, 3, 224, 224)
+    assert upsample(same, 224) is same          # Imagenette path is untouched
+    native.requires_grad_(True)
+    Upsampled(model, 224)(native).sum().backward()
+    assert native.grad is not None and torch.isfinite(native.grad).all()
+
+
+@pytest.mark.skipif(not CIFAR10_TEST_BATCH.is_file(), reason="CIFAR-10 not available")
+def test_cifar10_native_loader_returns_original_pixels():
+    """Native loading returns the untouched 32x32 uint8 test images."""
+    from utils.controlled_data import load_native_images, cifar10_test_set
+    sizes = {"train": 35, "dev": 10, "cal": 20, "test": 35}
+    rows = [r for r in build_manifest("data/raw", sizes, 10, 2, seed=42, subset_per_class=100,
+                                      dataset_name="cifar10") if r["partition"] == "test"][:5]
+    native = load_native_images(rows)
+    data = cifar10_test_set("data/raw").data
+    assert native.shape == (5, 3, 32, 32) and str(native.dtype) == "torch.uint8"
+    first = int(rows[0]["path"].split("#")[1])
+    assert (native[0].permute(1, 2, 0).numpy() == data[first]).all()

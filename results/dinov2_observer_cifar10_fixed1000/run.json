@@ -1,0 +1,11 @@
+{
+  "stage": "stage1",
+  "encoder": "dinov2",
+  "features": "/Users/zhuhaoyu/Bloomberg_Adversarial_Attacks/results/dinov2_observer_cifar10_fixed1000/features",
+  "reused_features": false,
+  "corpus_files": {
+    "manifest.csv": "3a61c09ac16209f139b70122651baed9b8bb533fd0ff5c91a95db98cdaa08289",
+    "variants.csv": "97f6c73b04e413c995d664a678f82ee504f446c7fd2e935979f85896b46cf141",
+    "corpus.json": "e8c747fedba52c8352e3ecf8edf3ac62ebc76c710eab675789dbe1d5a798668d"
+  }
+}

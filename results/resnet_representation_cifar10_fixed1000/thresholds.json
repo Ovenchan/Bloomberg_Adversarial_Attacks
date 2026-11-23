@@ -1,0 +1,16 @@
+[
+  {
+    "alpha": 0.01,
+    "threshold": 0.021236103959206772,
+    "calibration_fpr": 0.01,
+    "num_calibration": 200,
+    "rule": "conservative_upper_quantile_strict_v1"
+  },
+  {
+    "alpha": 0.05,
+    "threshold": 0.013347063761835072,
+    "calibration_fpr": 0.05,
+    "num_calibration": 200,
+    "rule": "conservative_upper_quantile_strict_v1"
+  }
+]
