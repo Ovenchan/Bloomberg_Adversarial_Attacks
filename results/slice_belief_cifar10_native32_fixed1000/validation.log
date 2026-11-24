@@ -1,0 +1,104 @@
+independent metric check: pgd/gradcam passed
+independent metric check: pgd/slice passed
+independent metric check: pgd/belief passed
+independent metric check: pgd/slice_signed passed
+independent metric check: pgd/belief_signed passed
+independent metric check: pgd/confidence passed
+independent metric check: pgd/imagenette_indicator passed
+independent metric check: pgd/segments passed
+independent metric check: cw/gradcam passed
+independent metric check: cw/slice passed
+independent metric check: cw/belief passed
+independent metric check: cw/slice_signed passed
+independent metric check: cw/belief_signed passed
+independent metric check: cw/confidence passed
+independent metric check: cw/imagenette_indicator passed
+independent metric check: cw/segments passed
+{
+  "status": "passed",
+  "explanations": 4282,
+  "manifest_rows": 10000,
+  "selected_sources": 1000,
+  "reserve_sources": 9000,
+  "transferred_archive_records": 220,
+  "handoff_reported_partial_records": 200,
+  "handoff_discrepancy": "The unchanged transferred checkpoint and original MPS log contain 220 records, versus 200 stated in the handoff; all are archived and excluded from the CUDA result.",
+  "prediction_mismatches": 0,
+  "partition_sizes": {
+    "train": 350,
+    "dev": 100,
+    "cal": 200,
+    "test": 350
+  },
+  "test_attack_counts": {
+    "pgd": {
+      "eligible": 319,
+      "successful": 319
+    },
+    "apgd": {
+      "eligible": 319,
+      "successful": 319
+    },
+    "cw": {
+      "eligible": 319,
+      "successful": 248
+    },
+    "patch": {
+      "eligible": 319,
+      "successful": 297
+    },
+    "fgsm": {
+      "eligible": 319,
+      "successful": 238
+    }
+  },
+  "matched_sources": {
+    "cw": {
+      "train_per_class": 289,
+      "dev_sources": 83
+    },
+    "patch": {
+      "train_per_class": 235,
+      "dev_sources": 64
+    },
+    "apgd": {
+      "train_per_class": 221,
+      "dev_sources": 60
+    }
+  },
+  "repeat_counts": {
+    "clean": {
+      "inputs": 20,
+      "repeats": 5
+    },
+    "pgd": {
+      "inputs": 18,
+      "repeats": 5
+    }
+  },
+  "status_counts": {
+    "slice": {
+      "ok": 2739,
+      "lime_fallback": 1543
+    },
+    "belief": {
+      "ok": 1584,
+      "all_eliminated": 2698
+    }
+  },
+  "zero_positive_maps": {
+    "gradcam": 0,
+    "slice": 1442,
+    "belief": 2789
+  },
+  "fidelity_rows": 2676,
+  "preserved_result_files_verified": 126,
+  "independent_stage1_metrics": {
+    "fitted_detectors": 16,
+    "attack_noise_operating_point_checks": 288,
+    "score_rows": 37936,
+    "metric_tolerance": 1e-12
+  },
+  "stage2_seed_rows": 720,
+  "stage2_bootstrap_rows": 24
+}

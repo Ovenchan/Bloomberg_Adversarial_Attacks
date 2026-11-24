@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "pinned_reference_cases_passed": 12,
+  "selected_tests_passed": 23,
+  "sources": {
+    "SLICE": {
+      "commit": "61d35c09b9f8bd9f770f5d48fae97a181a28f974",
+      "url": "https://github.com/rebathip/SLICE-Stabilized-LIME-for-Consistent-Explanations-for-Image-Classification/blob/61d35c09b9f8bd9f770f5d48fae97a181a28f974/slice/slice_explainer.py",
+      "path": "tmp/research_references/SLICE/slice/slice_explainer.py",
+      "sha256": "d41d28a466ef9661cdcfb797b84114971078ec1dfa41a49367b487ffef1906f2"
+    },
+    "BELIEF": {
+      "commit": "70f373c0aab5aa6b7e679ed4ecb7571e7a79ba5b",
+      "url": "https://github.com/rebathip/BELIEF/blob/70f373c0aab5aa6b7e679ed4ecb7571e7a79ba5b/slice/slice_explainer.py",
+      "path": "tmp/research_references/BELIEF/slice/slice_explainer.py",
+      "sha256": "6b3f3bb670db29f6d1061c92e7ebf90e758c261ebcb5986bbef86dab8f8fe745"
+    }
+  },
+  "optional_test_packages": {
+    "pandas": "2.2.3",
+    "matplotlib": "3.9.2",
+    "pyparsing": "3.3.3"
+  },
+  "scope": "CPU float64 fixtures; imports of TensorFlow, Keras and OpenCV stubbed by tests/reference_oracle.py; per-channel blur shim where specified",
+  "primary_extraction_dependencies_changed": false
+}

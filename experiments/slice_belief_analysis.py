@@ -317,12 +317,17 @@ class SliceBeliefAnalysis:
     def stage2(self):
         """Output: None; stage2_*.csv (per seed, seed summary, bootstrap of the mixture gain)."""
         cap = self.config["evaluation"]["max_matched_train"]
-        per_seed, boot_rows = [], []
+        per_seed, boot_rows, assignments, noise_per_seed, matching = [], [], [], [], []
         for holdout, families in self.config["stage2_folds"].items():
             pool = self.matched_pool("train", families)[:cap]
             dev_pool = set(self.matched_pool("dev", families))
+            matching.append({"holdout": holdout, "families": families, "train_sources": pool,
+                             "dev_sources": sorted(dev_pool), "max_matched_train": cap})
             for seed in self.config["experiment_seeds"]:
                 assignment = self.allocate(pool, families, seed, holdout)
+                assignments.extend({"holdout": holdout, "seed": seed, "source_id": source,
+                                    "mixture_attack": assignment[source], "pgd_only_attack": "pgd"}
+                                   for source in pool)
                 for method in METHODS:
                     neg = self.bank.restricted("train", CLEAN, method, pool)
                     mix = np.vstack([self.bank.restricted("train", f, method,
@@ -338,6 +343,8 @@ class SliceBeliefAnalysis:
                         model, C, dev_auc = self.detector(pos, neg, dev, seed)
                         thresholds, cal_scores = self.thresholds(model, method)
                         rows, noise_rows, raw = self.evaluate(model, method, thresholds, self.test_attacks)
+                        noise_per_seed.extend({"holdout": holdout, "seed": seed, "arm": arm,
+                                               "method": method, **row} for row in noise_rows)
                         raw_arms[arm] = (raw, cal_scores)
                         noise_fpr = np.mean([n[f"fpr@{PRIMARY_ALPHA}"] for n in noise_rows])
                         for row in rows:
@@ -360,6 +367,9 @@ class SliceBeliefAnalysis:
                                           "tpr5_gain": gain["tpr_diff"][0], "tpr5_gain_ci_low": gain["tpr_diff"][1],
                                           "tpr5_gain_ci_high": gain["tpr_diff"][2]})
         write_csv(self.tables / "stage2_per_seed.csv", per_seed)
+        write_csv(self.tables / "stage2_assignments.csv", assignments)
+        write_csv(self.tables / "stage2_noise.csv", noise_per_seed)
+        (self.tables / "stage2_matching.json").write_text(json.dumps(matching, indent=2), encoding="utf-8")
         write_csv(self.tables / "stage2_bootstrap.csv", boot_rows)
         summary = []
         keys = sorted({(r["holdout"], r["arm"], r["method"], r["attack"]) for r in per_seed})

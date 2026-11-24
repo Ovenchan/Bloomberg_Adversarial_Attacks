@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "pid": 8648,
+  "started_at": "2026-11-23 17:34:35-0500",
+  "device": "cuda",
+  "config": "configs/experiments/slice_belief_cifar10_native32_fixed1000.yaml",
+  "completed_stages": [
+    "audit",
+    "segment",
+    "sigma",
+    "explain",
+    "repeats",
+    "fidelity",
+    "analysis",
+    "cw",
+    "report"
+  ],
+  "stage": "report",
+  "finished_at": "2026-11-23 20:39:32-0500"
+}

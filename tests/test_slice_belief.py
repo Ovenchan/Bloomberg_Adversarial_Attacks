@@ -55,6 +55,75 @@ class TorchTemplateModel(nn.Module):
         return torch.einsum("nchw,kchw->nk", images.double(), self.templates)
 
 
+def test_non_cuda_queries_do_not_enter_autocast(monkeypatch):
+    """Non-CUDA full-precision queries work when autocast is unsupported."""
+    model = nn.Sequential(nn.Flatten(), nn.Linear(12, 3)).eval()
+    images = torch.arange(60, dtype=torch.float32).reshape(5, 3, 2, 2) / 60
+    expected = model(images).softmax(1)
+
+    def unsupported(*args, **kwargs):
+        raise RuntimeError("autocast device unsupported")
+
+    monkeypatch.setattr(torch, "autocast", unsupported)
+    adapter = ProbabilityAdapter(model, batch_size=2, use_amp=True)
+    torch.testing.assert_close(adapter.probabilities(images), expected)
+    torch.testing.assert_close(adapter.probabilities(images, 1), expected[:, 1])
+
+
+@pytest.mark.skipif(not torch.backends.mps.is_available(), reason="MPS unavailable")
+def test_mps_perturbation_queries_return_cpu_double():
+    """Exercise MPS inference and the CPU float64 regression boundary."""
+    model = nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(3, 2)).eval().to("mps")
+    engine = PerturbationQueryEngine(ProbabilityAdapter(model, batch_size=2, use_amp=True), "mps")
+    image = torch.arange(192, dtype=torch.float32).reshape(3, 8, 8) / 192
+    segments = np.repeat(np.arange(2), 4)[None, :].repeat(8, 0)
+    context = engine.context(image, segments, 1, 0.3)
+    masks = torch.tensor([[1., 1.], [0., 0.], [1., 0.]], dtype=torch.float64)
+    queries_before = context.num_queries
+    result = engine.query(context, masks)
+    expected = engine.adapter.probabilities(engine.perturbed_images(context, masks), 1).cpu().double()
+    assert result.device.type == "cpu" and result.dtype == torch.float64
+    assert context.num_queries - queries_before == 3
+    torch.testing.assert_close(result, expected)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA unavailable")
+def test_cuda_mixed_precision_queries_return_cpu_double():
+    """Exercise CUDA autocast and the CPU float64 regression boundary."""
+    model = nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(3, 2)).eval().cuda()
+    engine = PerturbationQueryEngine(ProbabilityAdapter(model, batch_size=2, use_amp=True), "cuda")
+    image = torch.arange(192, dtype=torch.float32).reshape(3, 8, 8) / 192
+    segments = np.repeat(np.arange(2), 4)[None, :].repeat(8, 0)
+    context = engine.context(image, segments, 1, 0.3)
+    masks = torch.tensor([[1., 1.], [0., 0.], [1., 0.]], dtype=torch.float64)
+    queries_before = context.num_queries
+    result = engine.query(context, masks)
+    expected = engine.adapter.probabilities(engine.perturbed_images(context, masks), 1).cpu().double()
+    assert result.device.type == "cpu" and result.dtype == torch.float64
+    assert context.num_queries - queries_before == 3
+    torch.testing.assert_close(result, expected)
+
+
+@pytest.mark.parametrize("provenance", [None, {"identity": {"device": "mps", "query_precision": "float32"}}])
+def test_cifar10_cache_guard_rejects_missing_or_incompatible_provenance(tmp_path, provenance):
+    """Transferred caches cannot silently enter a new backend's primary result."""
+    import json
+    from types import SimpleNamespace
+    from experiments.cifar10_explanations import CONFIG, execution_environment
+
+    work, results = tmp_path / "work", tmp_path / "results"
+    for name in ("explanations", "repeats"):
+        (work / name).mkdir(parents=True)
+    results.mkdir()
+    (work / "explanations" / "train_clean.pt").write_bytes(b"unread cache")
+    if provenance is not None:
+        (results / "execution_environment.json").write_text(json.dumps(provenance))
+    study = SimpleNamespace(work=work, results=results, device=torch.device("cpu"),
+                            config={"explainers": {"use_amp": True}})
+    with pytest.raises(ValueError, match="archive them before extraction"):
+        execution_environment(study, CONFIG)
+
+
 def make_fixture(seed=0, weak_blocks=True, zero_model=False):
     """Input: int seed, bools. Output: (image CHW, segments HW, templates)."""
     rng = np.random.default_rng(seed)

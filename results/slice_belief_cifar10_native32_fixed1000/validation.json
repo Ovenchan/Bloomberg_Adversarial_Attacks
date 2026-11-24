@@ -1,0 +1,229 @@
+{
+  "status": "passed",
+  "explanations": 4282,
+  "blocks": [
+    {
+      "block": "train_clean",
+      "required": 350,
+      "readable": 350
+    },
+    {
+      "block": "train_pgd",
+      "required": 306,
+      "readable": 306
+    },
+    {
+      "block": "dev_clean",
+      "required": 100,
+      "readable": 100
+    },
+    {
+      "block": "dev_pgd",
+      "required": 89,
+      "readable": 89
+    },
+    {
+      "block": "cal_clean",
+      "required": 200,
+      "readable": 200
+    },
+    {
+      "block": "test_clean",
+      "required": 350,
+      "readable": 350
+    },
+    {
+      "block": "test_pgd",
+      "required": 319,
+      "readable": 319
+    },
+    {
+      "block": "test_apgd",
+      "required": 319,
+      "readable": 319
+    },
+    {
+      "block": "test_cw",
+      "required": 248,
+      "readable": 248
+    },
+    {
+      "block": "test_patch",
+      "required": 297,
+      "readable": 297
+    },
+    {
+      "block": "test_fgsm",
+      "required": 238,
+      "readable": 238
+    },
+    {
+      "block": "test_gauss2",
+      "required": 100,
+      "readable": 100
+    },
+    {
+      "block": "test_gauss4",
+      "required": 100,
+      "readable": 100
+    },
+    {
+      "block": "test_gauss8",
+      "required": 100,
+      "readable": 100
+    },
+    {
+      "block": "test_unif8",
+      "required": 100,
+      "readable": 100
+    },
+    {
+      "block": "dev_apgd",
+      "required": 89,
+      "readable": 89
+    },
+    {
+      "block": "dev_cw",
+      "required": 64,
+      "readable": 64
+    },
+    {
+      "block": "dev_patch",
+      "required": 83,
+      "readable": 83
+    },
+    {
+      "block": "train_apgd",
+      "required": 306,
+      "readable": 306
+    },
+    {
+      "block": "train_cw",
+      "required": 235,
+      "readable": 235
+    },
+    {
+      "block": "train_patch",
+      "required": 289,
+      "readable": 289
+    }
+  ],
+  "manifest_rows": 10000,
+  "selected_sources": 1000,
+  "reserve_sources": 9000,
+  "transferred_archive_records": 220,
+  "handoff_reported_partial_records": 200,
+  "handoff_discrepancy": "The unchanged transferred checkpoint and original MPS log contain 220 records, versus 200 stated in the handoff; all are archived and excluded from the CUDA result.",
+  "prediction_mismatches": 0,
+  "partition_sizes": {
+    "train": 350,
+    "dev": 100,
+    "cal": 200,
+    "test": 350
+  },
+  "test_attack_counts": {
+    "pgd": {
+      "eligible": 319,
+      "successful": 319
+    },
+    "apgd": {
+      "eligible": 319,
+      "successful": 319
+    },
+    "cw": {
+      "eligible": 319,
+      "successful": 248
+    },
+    "patch": {
+      "eligible": 319,
+      "successful": 297
+    },
+    "fgsm": {
+      "eligible": 319,
+      "successful": 238
+    }
+  },
+  "matched_sources": {
+    "cw": {
+      "train_per_class": 289,
+      "dev_sources": 83
+    },
+    "patch": {
+      "train_per_class": 235,
+      "dev_sources": 64
+    },
+    "apgd": {
+      "train_per_class": 221,
+      "dev_sources": 60
+    }
+  },
+  "repeat_counts": {
+    "clean": {
+      "inputs": 20,
+      "repeats": 5
+    },
+    "pgd": {
+      "inputs": 18,
+      "repeats": 5
+    }
+  },
+  "status_counts": {
+    "slice": {
+      "ok": 2739,
+      "lime_fallback": 1543
+    },
+    "belief": {
+      "ok": 1584,
+      "all_eliminated": 2698
+    }
+  },
+  "zero_positive_maps": {
+    "gradcam": 0,
+    "slice": 1442,
+    "belief": 2789
+  },
+  "fidelity_rows": 2676,
+  "preserved_result_files_verified": 126,
+  "independent_stage1_metrics": {
+    "fitted_detectors": 16,
+    "attack_noise_operating_point_checks": 288,
+    "score_rows": 37936,
+    "metric_tolerance": 1e-12
+  },
+  "stage2_seed_rows": 720,
+  "stage2_bootstrap_rows": 24,
+  "artifact_sha256": {
+    "corpus_validation.json": "8ccaa283bc84f5d11a8c0f220108c5ba87406fc6ffd8b62fc5642c8c1bb89fff",
+    "execution_environment.json": "9467589640782a88d11c3284e0dbc19c5dd4aeea7083cddf9b0d25e57fbe9d5a",
+    "experiment_status.json": "bc40cd3ccbfa6a3891fe29ee1edec279f665ed56b0ee98550ad14f0b5772f058",
+    "fidelity.csv": "eb0fffd297a6295697535e07a2d7827998b5d281a478c886e654d024cc979a41",
+    "prediction_audit.json": "62c2b932c00232ffb4108372432a0e0ce2e286111533099886a4aaed581cfde8",
+    "preserved_results_sha256.json": "3cacea049943affc386138f4f5dca00a0bf3240e4b3d2634284212b414223865",
+    "reference_validation.json": "9e0588f12515953ae6ec19432302e0c2588a64b6854a0098409af8e4fb8bef75",
+    "source_files.csv": "9d9f7b6d18ac57656ca2a53adc5fff244dc607a9d432ec2867f2cde85a698166",
+    "validation_scores.csv": "d33b8a825b7d6063631bd1e7f4a5ba2d2bd36d7f19a923c2fe1073df37152941",
+    "validation_thresholds.json": "6333158cf5298cf3a7518f08d92ea2278157165b714aa1860d5c5c46002137a4",
+    "audit_attempts/cuda_default_prediction_audit.json": "aa23867ae41d12997752ce3023da6408467e006a194f8f0fb9e90beaffd5f4e2",
+    "audit_attempts/cuda_default_status.json": "cfa2a29993f3a586ecde37093a30cd6b404adde3993ea286d19c995545c7b29e",
+    "audit_attempts/numerical_diagnosis.json": "a1f14f95aafd6204c0f9c6c19d884ee58431d167afd9e52877e0f4f868601df9",
+    "cw_train/run.json": "00ae4fd40df4c5be7ab0105097989ac007ea7310114ce19cdb802b00478d088d",
+    "cw_train/stage1_bootstrap.csv": "016d9b7fc346e4530ac01424b32c1aa503d4236d56fb85246097dd35d9a29186",
+    "cw_train/stage1_detection.csv": "9329944fb5d5f340a8eab8e7c15874875c50309e75a9310fc4845dca0ba7c901",
+    "cw_train/stage1_noise.csv": "5aae6b27317b059798227c0b138d7237d2d43ecef2445bede35ed410ff853dda",
+    "tables/asr.csv": "885cc74141158500014dba6787e4d25f3703dc2bba69fb71bf41f1167e3452aa",
+    "tables/cost.csv": "43c817b8c54d712b4fcfafb17b005a4dd6360a83163e2a410226175ae8a05384",
+    "tables/explanation_status.csv": "f98a916c53466cde68e158715bcf1722fb05bc163bb86cc9dbd334afbb050d9d",
+    "tables/fidelity_summary.csv": "3fbeb1b7177dd1486c2bcf791e45af76f9d3431ff09fcaa0d2f6220f16ae5e66",
+    "tables/stability.csv": "10b1a45eb6db9d7123007e2190fbc90ae625cd843050a757dc8309e7318e55b3",
+    "tables/stage1_bootstrap.csv": "26ffd66c6b5ed3cc9868cd079b04364be5a1a1338d01abe518a59245dc1dc00f",
+    "tables/stage1_detection.csv": "07d92031532163af97aadbccedfa5b45bbcf1b25972932536f9e7c33c3898f12",
+    "tables/stage1_noise.csv": "0524abbb96358e668d02b3be57ab754d19d0d1dce0db40fab858855e5715272d",
+    "tables/stage2_assignments.csv": "47e30f27443ed2bb23883c91b4fd68775c0d788ed7451918a834fdc4ef6758f8",
+    "tables/stage2_bootstrap.csv": "25a8b55be2e0ac73f25cf686aa048fc3e82429b0a1c45ee19d826a2edfccaa46",
+    "tables/stage2_matching.json": "238938f254ae0c5caffc108485193da266fb8693b1cf927e426271b2738c5338",
+    "tables/stage2_noise.csv": "2f0668f7d526da79c83ef3e225ce406f8e2501a2e723867dd4b9a79a0ce1eec6",
+    "tables/stage2_per_seed.csv": "3a6b365990f599a50a498be49de6c1dffb836589e4fa598807e0b166d651734c",
+    "tables/stage2_summary.csv": "116548c0cb175e02a195812b261bf68c52e6151d086afaf7a7dc0fb42676bcb3",
+    "tables/summary.json": "4a7280e77feb195c1327bcdac30db3646418853b62dcd3330909efbb66ccd93f"
+  }
+}

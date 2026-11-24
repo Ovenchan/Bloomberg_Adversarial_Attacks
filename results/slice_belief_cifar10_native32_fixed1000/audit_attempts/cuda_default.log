@@ -1,0 +1,18 @@
+[17:32:17] audit cal_clean: 200 rows, 0 prediction mismatches
+[17:32:17] audit dev_apgd: 100 rows, 0 prediction mismatches
+[17:32:17] audit dev_clean: 100 rows, 0 prediction mismatches
+[17:32:18] audit dev_cw: 100 rows, 0 prediction mismatches
+[17:32:18] audit dev_patch: 100 rows, 0 prediction mismatches
+[17:32:18] audit dev_pgd: 100 rows, 0 prediction mismatches
+[17:32:20] audit test_apgd: 350 rows, 0 prediction mismatches
+[17:32:21] audit test_clean: 350 rows, 1 prediction mismatches
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "F:\Bloomberg_Adversarial_Attacks\experiments\cifar10_explanations.py", line 235, in <module>
+    main()
+  File "F:\Bloomberg_Adversarial_Attacks\experiments\cifar10_explanations.py", line 203, in main
+    audit(study)
+  File "F:\Bloomberg_Adversarial_Attacks\experiments\cifar10_explanations.py", line 102, in audit
+    raise ValueError(f"Classifier differs from baseline on {name}; stopping before explanations")
+ValueError: Classifier differs from baseline on test_clean; stopping before explanations

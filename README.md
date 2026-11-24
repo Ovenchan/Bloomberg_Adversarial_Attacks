@@ -6,6 +6,20 @@ Our starting point is previous work using LIME for adversarial detection. Rather
 
 ---
 
+## Completed controlled experiments
+
+The native-32 CIFAR-10 explanation study is complete and independently validated
+on 4,282 selected inputs. It compares Grad-CAM, SLICE and BELIEF with the preserved
+ResNet/DINOv2 representation results, including PGD/CW-trained detectors,
+matched three-seed mixture training, noise controls and explanation quality/cost.
+
+- [Overall experiment report](COMBINED_EXPERIMENT_REPORT.md)
+- [New experiments and CIFAR-10 results](NEW_EXPERIMENTS_REPORT.md)
+- [Native-32 CIFAR-10 results and validation](results/slice_belief_cifar10_native32_fixed1000/MAIN_RESULTS.md)
+- [Environment, cache migration and reproduction](results/slice_belief_cifar10_native32_fixed1000/EXPERIMENT.md)
+
+---
+
 ## Project Goals
 
 - Compare CNN-based and visual encoder-based pipelines.

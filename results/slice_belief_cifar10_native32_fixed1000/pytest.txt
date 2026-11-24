@@ -1,0 +1,32 @@
+.s....................................................                   [100%]
+============================== warnings summary ===============================
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+  F:\Bloomberg_Adversarial_Attacks\.venv-corpus-win\Lib\site-packages\matplotlib\_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+    prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+  F:\Bloomberg_Adversarial_Attacks\.venv-corpus-win\Lib\site-packages\matplotlib\_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+  F:\Bloomberg_Adversarial_Attacks\.venv-corpus-win\Lib\site-packages\matplotlib\_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+tests/test_slice_belief.py::test_kde_sign_entropy_matches_reference
+  F:\Bloomberg_Adversarial_Attacks\.venv-corpus-win\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_slice_belief.py:73: MPS unavailable
+53 passed, 1 skipped, 14 warnings in 19.05s

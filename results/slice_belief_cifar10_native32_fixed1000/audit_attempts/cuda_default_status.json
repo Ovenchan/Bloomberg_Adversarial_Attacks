@@ -1,0 +1,10 @@
+{
+  "status": "failed",
+  "pid": 17760,
+  "started_at": "2026-11-23 17:32:14-0500",
+  "device": "cuda",
+  "config": "configs/experiments/slice_belief_cifar10_native32_fixed1000.yaml",
+  "completed_stages": [],
+  "stage": "audit",
+  "error": "Traceback (most recent call last):\n  File \"F:\\Bloomberg_Adversarial_Attacks\\experiments\\cifar10_explanations.py\", line 203, in main\n    audit(study)\n  File \"F:\\Bloomberg_Adversarial_Attacks\\experiments\\cifar10_explanations.py\", line 102, in audit\n    raise ValueError(f\"Classifier differs from baseline on {name}; stopping before explanations\")\nValueError: Classifier differs from baseline on test_clean; stopping before explanations\n"
+}

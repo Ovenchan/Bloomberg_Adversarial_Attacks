@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "idempotent_outputs": {
+    "NEW_EXPERIMENTS_REPORT.md": "972cf81d6b0f7697a372ddb24b29cd91254c1a3a689b00433c6e6e6d67dab598",
+    "COMBINED_EXPERIMENT_REPORT.md": "9784c9970973e3d6d213bf039f10614c627365234525b83a31b3fbfade815652",
+    "results/slice_belief_cifar10_native32_fixed1000/MAIN_RESULTS.md": "a1b210b13a8c24f004598f146efee192864e972d20197cc5ac0131ec7a8a72f3",
+    "results/corpus_summary_imagenette_cifar10.csv": "491cbe8aa9e36cdab1c611df708b137f399ba8012401c44002247d69d9d39db7"
+  },
+  "local_links_checked": 165,
+  "combined_main_sections": 3,
+  "preserved_original_table_rows": {
+    "NEW_EXPERIMENTS_REPORT.md": 72,
+    "COMBINED_EXPERIMENT_REPORT.md": 97
+  },
+  "preserved_result_files": 126,
+  "unchanged_report_inputs": 82,
+  "scope": "Report regeneration, repository-relative links, original table cells, three-section structure and input/result preservation"
+}
