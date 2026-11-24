@@ -2,7 +2,17 @@
 
 This report combines the fixed-1,000-image SLICE/BELIEF study with Experiment 2, the ResNet representation baseline. Both pipelines use the same saved clean and attacked images, source partitions, attack-success masks, detector family, and calibration protocol. The representation experiment changes the detector's input features to frozen ResNet pooled representations. Clearly labeled CIFAR-10 native-32 subsections extend the comparison to the completed explanation study and independent DINOv2 observer.
 
-On the Imagenette corpus, ResNet representations achieve higher Stage-1 AUC than all tested explanation features on all five attacks. Mixture training does not improve ResNet's mean held-out AUC over its matched PGD-only control. These are results for this saved corpus; differences in actual false-positive rates and the limitations below matter when interpreting detection rates.
+**Main result: detection depends strongly on the attack family used for training.** On both datasets, PGD-trained ResNet features separate PGD/APGD better than the tested explanation features. On native-32 CIFAR-10, however, representation detectors also flag substantially more ordinary noise. Explanation detectors offer fewer noise false alarms, but miss many other attacks; frequent empty SLICE/BELIEF maps further limit claims about explanation quality. These results do not establish a universally best detector.
+
+| Question | What the completed native-32 CIFAR-10 results support |
+| --- | --- |
+| Do explanation features detect attacks? | SLICE signed detects 85.3% of successful PGD and 94.7% of APGD attacks, but only 3.2% of CW, 15.2% of patch and 2.1% of FGSM attacks at the 5% calibration target. |
+| Are representation features better? | ResNet has higher Stage-1 AUC than all tested explanation maps on every attack, but flags 42% of Gaussian-8/255 inputs, versus 1% for Grad-CAM and 5% for SLICE signed. |
+| Does more varied training solve generalization? | No consistent improvement: mixture training increases mean held-out AUC in only 5/15 explanation-method comparisons and in none of the ResNet/DINOv2 comparisons. |
+| Does good detection imply good explanations? | No. SLICE often produces empty positive maps on PGD/APGD; this may provide a detection signal without informative attribution. BELIEF is often empty even on clean inputs. |
+| Is CW intrinsically undetectable here? | No. CW-specific training improves several detectors; confidence features reach CW AUC 0.887 and TPR 55.6%, but lose PGD/APGD detection. |
+
+The overview describes observed results, not cross-pipeline significance tests. Detailed numerical evidence remains below. Read [§2.6](#26-cifar-10-native-32-completed-explanations) for explanation-specific implications and [§3.8](#38-what-the-comparison-supports) for the comparison and its practical limits. Imagenette results remain separately labeled because its classifier has an additional class-membership confound (§1.4).
 
 Contents: [1. Overall setup](#1-overall-setup) · [2. Explanation-based pipeline](#2-explanation-based-pipeline) · [3. Representation-based pipeline](#3-representation-based-pipeline)
 
@@ -57,7 +67,7 @@ Source: [attack corpus statistics](results/slice_belief_fixed1000/tables/asr.csv
 
 ### 1.3 Shared detector, two stages and metrics
 
-Every learned detector uses training-only `StandardScaler` followed by logistic regression. C is selected from {0.01, 0.1, 1, 10} by development AUC. Each fitted detector receives its own thresholds from the same 200 clean calibration images, targeting 1% and 5% FPR. Thresholds are then frozen across test attacks and noise conditions.
+The detector is a binary classifier: clean inputs have label 0 and successful attacked inputs have label 1. Each feature method gets its own fitted detector. It flags suspicious inputs; it does not correct the ResNet class prediction. Every learned detector uses training-only `StandardScaler` followed by logistic regression. C is selected from {0.01, 0.1, 1, 10} by development AUC. Each fitted detector receives its own thresholds from the same 200 clean calibration images, targeting 1% and 5% FPR. Thresholds are then frozen across test attacks and noise conditions.
 
 **Stage 1: PGD-only training.** Fit on all 350 clean training images and 320 successful PGD training examples, select C on development clean/PGD data, and test on PGD, APGD, CW, patch and FGSM.
 
@@ -234,208 +244,133 @@ Sources: [elimination status](results/slice_belief_fixed1000/tables/explanation_
 The original report also describes an independent 900-image run, with 30/10/20/30 images per class across train/dev/cal/test. Its main explanation-method rankings broadly agree with the fixed-1,000 study, while elevated Grad-CAM noise false alarms did not replicate. Those results are supporting evidence, not pooled observations for the present comparison. Earlier sorted-subset and grouped-cross-validation results used different protocols and are excluded from the primary comparison tables.
 
 <!-- cifar10-native32-explanation:start -->
+<!-- editorial-summary: preserve during report regeneration -->
 ### 2.6 CIFAR-10 native-32: completed explanations
 
-#### PGD-trained Stage 1 and false alarms
+This experiment compares **Grad-CAM, SLICE and BELIEF against ResNet and DINOv2 features on native-resolution CIFAR-10**.
 
-Cells show **AUC / TPR at the 5% clean-calibration target**. Actual clean test FPR is a separate column; the target does not guarantee a 5% test FPR. Positive explanation maps have 196 features and signed variants have 392. Confidence features retain the original corpus's saved maximum probabilities and entropies.
+The main finding is: **explanation-based detectors recognize PGD/APGD reasonably well, but generalize poorly to other attacks. ResNet features detect more attacks overall, while explanation features produce fewer false alarms on ordinary noise.** There is also a major explanation-quality issue: many SLICE/BELIEF outputs are empty.
 
-| Features | PGD | APGD | CW | PATCH | FGSM | Actual clean FPR |
-| --- | --- | --- | --- | --- | --- | --- |
+The saved validation records mark the run complete, with **4,282 explanation inputs validated and zero classifier-prediction mismatches**. These inputs include clean, successful attacked and noisy versions of the 1,000 original images; stability repetitions are counted separately.
+
+#### 2.6.1 What was tested?
+
+The experiment uses 1,000 CIFAR-10 images, split into 350 training, 100 development, 200 calibration and 350 test images.
+
+Attacks modify the original **32×32 pixels**, before resizing for the classifier. This matters because attacking after enlargement to 224×224 can introduce artificial patterns that make detection misleadingly easy.
+
+Each detector is a separately fitted **logistic regression model** that distinguishes clean from attacked images using:
+
+- **Explanation maps:** which image regions support the prediction.
+- **ResNet features:** the attacked classifier’s internal representation.
+- **DINOv2 features:** an independent model’s representation.
+
+Stage 1 trains on PGD attacks and tests on several attack families.
+
+#### 2.6.2 PGD/APGD detection works; transfer to other attacks is weak
+
+Attack cells show **AUC / TPR at the 5% clean-calibration target**. AUC measures ranking (1.0 = perfect separation; 0.5 = chance-level ranking). TPR is the percentage of successful attacks detected at the frozen threshold. The final column reports the **actual clean-test FPR** at that same threshold; it need not equal the 5% calibration target.
+
+| Detector features | PGD | APGD | CW | Patch | FGSM | Actual clean-test FPR |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Grad-CAM | 0.917 / 59.6% | 0.928 / 63.9% | 0.500 / 8.1% | 0.381 / 3.0% | 0.586 / 14.3% | 4.9% |
-| SLICE | 0.889 / 85.3% | 0.948 / 94.4% | 0.491 / 3.6% | 0.573 / 14.5% | 0.518 / 1.7% | 4.3% |
-| BELIEF | 0.696 / 0.0% | 0.697 / 0.0% | 0.208 / 0.0% | 0.553 / 0.0% | 0.294 / 0.0% | 0.0% |
 | SLICE signed | 0.910 / 85.3% | 0.961 / 94.7% | 0.528 / 3.2% | 0.583 / 15.2% | 0.548 / 2.1% | 4.6% |
 | BELIEF signed | 0.715 / 0.6% | 0.716 / 0.6% | 0.235 / 0.0% | 0.561 / 0.3% | 0.311 / 0.4% | 0.3% |
-| Confidence | 0.983 / 92.8% | 0.992 / 96.6% | 0.113 / 0.0% | 0.590 / 15.5% | 0.217 / 0.0% | 5.1% |
-| Superpixel count | 0.717 / 29.8% | 0.711 / 32.0% | 0.557 / 14.9% | 0.456 / 6.4% | 0.772 / 41.2% | 10.3% |
 | ResNet pooled | 1.000 / 99.7% | 1.000 / 99.7% | 0.645 / 11.3% | 0.872 / 50.5% | 0.864 / 38.2% | 2.6% |
 | DINOv2 | 0.992 / 97.2% | 0.993 / 97.2% | 0.668 / 20.6% | 0.514 / 6.1% | 0.998 / 99.6% | 7.1% |
 
-| PGD-trained features | gauss2 FPR | gauss4 FPR | gauss8 FPR | unif8 FPR |
-| --- | --- | --- | --- | --- |
-| Grad-CAM | 4.0% | 6.0% | 1.0% | 4.0% |
-| SLICE | 1.0% | 5.0% | 3.0% | 5.0% |
-| BELIEF | 0.0% | 0.0% | 0.0% | 0.0% |
-| SLICE signed | 4.0% | 3.0% | 5.0% | 6.0% |
-| BELIEF signed | 0.0% | 0.0% | 0.0% | 2.0% |
-| Confidence | 3.0% | 2.0% | 2.0% | 2.0% |
-| Superpixel count | 19.0% | 31.0% | 54.0% | 27.0% |
+“Signed” features retain both positive and negative attribution information.
 
-Sources: [Stage 1](results/slice_belief_cifar10_native32_fixed1000/tables/stage1_detection.csv), [noise controls](results/slice_belief_cifar10_native32_fixed1000/tables/stage1_noise.csv), [ResNet](results/resnet_representation_cifar10_native32/stage1_detection.csv), [DINOv2](results/dinov2_observer_cifar10_native32/stage1_detection.csv). The constant ten-class membership indicator is retained in raw CSVs but omitted here because every CIFAR-10 prediction belongs to its label set.
+**Interpretation:** learning the signature of PGD transfers well to APGD, but does not establish a general detector of adversarial images. Scores below 0.5 indicate that the learned ranking often reverses on the new attack family.
 
-Positive-only BELIEF has zero TPR on every attack as well as zero clean/noise FPR at the 5% target. Its independent calibration check records zero calibration FPR under the strict decision rule. The zero false-alarm rate therefore does not indicate useful detection at this operating point.
+AUC also differs from actual detection at a chosen threshold. With thresholds calibrated to target 5% clean false alarms:
 
-#### Stage 2: matched mixtures and uncertainty
+- SLICE signed catches **85.3% of PGD** and **94.7% of APGD**.
+- It catches only **3.2% of CW**, **15.2% of patch**, and **2.1% of FGSM**.
+- ResNet catches **99.7% of PGD/APGD**, but still only **11.3% of CW**.
 
-| Features | Holdout | Arm | N per class | AUC mean ± SD | TPR mean ± SD | Clean FPR | Mean noise FPR |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| BELIEF | APGD | mixture | 221 | 0.423 ± 0.040 | 0.0% ± 0.0% | 6.7% | 7.3% |
-| BELIEF signed | APGD | mixture | 221 | 0.448 ± 0.029 | 0.0% ± 0.0% | 5.9% | 7.3% |
-| Confidence | APGD | mixture | 221 | 0.008 ± 0.000 | 0.0% ± 0.0% | 6.3% | 10.5% |
-| Grad-CAM | APGD | mixture | 221 | 0.675 ± 0.008 | 19.5% ± 3.6% | 5.9% | 5.6% |
-| Superpixel count | APGD | mixture | 221 | 0.711 ± 0.000 | 32.0% ± 0.0% | 10.3% | 32.8% |
-| SLICE | APGD | mixture | 221 | 0.840 ± 0.050 | 0.1% ± 0.2% | 6.6% | 5.0% |
-| SLICE signed | APGD | mixture | 221 | 0.919 ± 0.024 | 31.6% ± 54.7% | 5.9% | 5.8% |
-| BELIEF | APGD | pgd_only | 221 | 0.680 ± 0.000 | 0.6% ± 0.0% | 2.0% | 1.5% |
-| BELIEF signed | APGD | pgd_only | 221 | 0.716 ± 0.000 | 0.0% ± 0.0% | 0.0% | 0.5% |
-| Confidence | APGD | pgd_only | 221 | 0.992 ± 0.000 | 96.6% ± 0.0% | 5.1% | 2.3% |
-| Grad-CAM | APGD | pgd_only | 221 | 0.921 ± 0.000 | 68.3% ± 0.0% | 6.9% | 5.5% |
-| Superpixel count | APGD | pgd_only | 221 | 0.711 ± 0.000 | 32.0% ± 0.0% | 10.3% | 32.8% |
-| SLICE | APGD | pgd_only | 221 | 0.947 ± 0.000 | 94.4% ± 0.0% | 4.0% | 2.8% |
-| SLICE signed | APGD | pgd_only | 221 | 0.963 ± 0.000 | 94.7% ± 0.0% | 3.7% | 5.5% |
-| BELIEF | CW | mixture | 289 | 0.247 ± 0.032 | 6.5% ± 4.3% | 4.4% | 4.0% |
-| BELIEF signed | CW | mixture | 289 | 0.313 ± 0.011 | 10.5% ± 0.8% | 5.9% | 5.8% |
-| Confidence | CW | mixture | 289 | 0.112 ± 0.000 | 0.0% ± 0.0% | 5.1% | 2.3% |
-| Grad-CAM | CW | mixture | 289 | 0.705 ± 0.001 | 21.2% ± 0.9% | 5.9% | 4.6% |
-| Superpixel count | CW | mixture | 289 | 0.557 ± 0.000 | 14.9% ± 0.0% | 10.3% | 32.8% |
-| SLICE | CW | mixture | 289 | 0.499 ± 0.013 | 4.0% ± 3.0% | 2.4% | 2.3% |
-| SLICE signed | CW | mixture | 289 | 0.518 ± 0.012 | 1.6% ± 1.2% | 4.3% | 4.9% |
-| BELIEF | CW | pgd_only | 289 | 0.214 ± 0.000 | 0.8% ± 0.0% | 1.7% | 1.0% |
-| BELIEF signed | CW | pgd_only | 289 | 0.219 ± 0.000 | 0.0% ± 0.0% | 0.0% | 0.5% |
-| Confidence | CW | pgd_only | 289 | 0.117 ± 0.000 | 0.0% ± 0.0% | 5.1% | 2.3% |
-| Grad-CAM | CW | pgd_only | 289 | 0.531 ± 0.000 | 9.3% ± 0.0% | 4.3% | 3.5% |
-| Superpixel count | CW | pgd_only | 289 | 0.557 ± 0.000 | 14.9% ± 0.0% | 10.3% | 32.8% |
-| SLICE | CW | pgd_only | 289 | 0.494 ± 0.000 | 4.4% ± 0.0% | 4.9% | 4.5% |
-| SLICE signed | CW | pgd_only | 289 | 0.528 ± 0.000 | 2.4% ± 0.0% | 4.3% | 4.0% |
-| BELIEF | PATCH | mixture | 235 | 0.476 ± 0.002 | 3.8% ± 1.9% | 7.1% | 8.4% |
-| BELIEF signed | PATCH | mixture | 235 | 0.498 ± 0.009 | 5.7% ± 1.0% | 7.3% | 9.4% |
-| Confidence | PATCH | mixture | 235 | 0.471 ± 0.002 | 4.7% ± 0.0% | 7.4% | 10.5% |
-| Grad-CAM | PATCH | mixture | 235 | 0.663 ± 0.008 | 10.7% ± 1.0% | 5.1% | 3.7% |
-| Superpixel count | PATCH | mixture | 235 | 0.456 ± 0.000 | 6.4% ± 0.0% | 10.3% | 32.8% |
-| SLICE | PATCH | mixture | 235 | 0.571 ± 0.007 | 1.9% ± 1.2% | 1.9% | 1.8% |
-| SLICE signed | PATCH | mixture | 235 | 0.590 ± 0.007 | 16.3% ± 0.7% | 5.0% | 5.0% |
-| BELIEF | PATCH | pgd_only | 235 | 0.549 ± 0.000 | 0.7% ± 0.0% | 1.1% | 1.0% |
-| BELIEF signed | PATCH | pgd_only | 235 | 0.557 ± 0.000 | 0.3% ± 0.0% | 0.0% | 0.5% |
-| Confidence | PATCH | pgd_only | 235 | 0.589 ± 0.000 | 15.5% ± 0.0% | 5.1% | 2.3% |
-| Grad-CAM | PATCH | pgd_only | 235 | 0.478 ± 0.000 | 6.4% ± 0.0% | 6.3% | 4.8% |
-| Superpixel count | PATCH | pgd_only | 235 | 0.456 ± 0.000 | 6.4% ± 0.0% | 10.3% | 32.8% |
-| SLICE | PATCH | pgd_only | 235 | 0.580 ± 0.000 | 0.3% ± 0.0% | 0.9% | 0.8% |
-| SLICE signed | PATCH | pgd_only | 235 | 0.601 ± 0.000 | 16.2% ± 0.0% | 4.0% | 6.2% |
+These detection rates count **successful attacks**, not all attempted attacks.
 
-The following paired source-bootstrap intervals compare mixture minus its refitted PGD-only control at seed 42 (2,000 test-source resamples, with calibration resampled). They describe the primary seed, not the uncertainty of the three-seed mean. The displayed gain estimates are bootstrap means.
+#### 2.6.3 Better detection comes with a noise tradeoff
 
-| Features | Holdout | Bootstrap mean AUC gain [95% interval] | Bootstrap mean TPR gain [95% interval] |
-| --- | --- | --- | --- |
-| Grad-CAM | CW | 0.175 [0.143, 0.209] | 9.1% [0.7%, 18.1%] |
-| SLICE | CW | 0.015 [-0.017, 0.048] | 3.4% [-1.6%, 8.4%] |
-| BELIEF | CW | 0.025 [-0.003, 0.054] | 4.0% [1.2%, 7.0%] |
-| SLICE signed | CW | 0.003 [-0.035, 0.042] | 0.1% [-3.9%, 6.4%] |
-| BELIEF signed | CW | 0.086 [0.043, 0.130] | 11.7% [7.0%, 17.9%] |
-| Confidence | CW | -0.005 [-0.011, 0.000] | 0.0% [0.0%, 0.0%] |
-| Superpixel count | CW | 0.000 [0.000, 0.000] | 0.0% [0.0%, 0.0%] |
-| Grad-CAM | PATCH | 0.192 [0.160, 0.225] | 5.2% [-0.3%, 11.7%] |
-| SLICE | PATCH | -0.013 [-0.041, 0.014] | -5.0% [-18.1%, 1.4%] |
-| BELIEF | PATCH | -0.076 [-0.134, -0.020] | 1.7% [-0.7%, 6.0%] |
-| SLICE signed | PATCH | -0.002 [-0.030, 0.025] | -0.1% [-8.3%, 4.6%] |
-| BELIEF signed | PATCH | -0.055 [-0.110, -0.001] | 4.7% [1.3%, 8.4%] |
-| Confidence | PATCH | -0.115 [-0.198, -0.029] | -10.6% [-17.5%, -3.6%] |
-| Superpixel count | PATCH | 0.000 [0.000, 0.000] | 0.0% [0.0%, 0.0%] |
-| Grad-CAM | APGD | -0.243 [-0.279, -0.209] | -46.7% [-58.6%, -30.9%] |
-| SLICE | APGD | -0.148 [-0.187, -0.110] | -78.3% [-96.6%, 0.0%] |
-| BELIEF | APGD | -0.236 [-0.286, -0.191] | -0.6% [-1.6%, 0.0%] |
-| SLICE signed | APGD | -0.068 [-0.095, -0.044] | -83.2% [-96.9%, 0.3%] |
-| BELIEF signed | APGD | -0.246 [-0.291, -0.203] | 0.0% [0.0%, 0.0%] |
-| Confidence | APGD | -0.984 [-0.993, -0.972] | -96.2% [-98.7%, -93.0%] |
-| Superpixel count | APGD | 0.000 [0.000, 0.000] | 0.0% [0.0%, 0.0%] |
+On Gaussian noise with standard deviation 8/255:
 
-Sources: [three-seed summaries](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_summary.csv), [per-seed metrics](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_per_seed.csv), [per-seed noise](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_noise.csv), [training-arm bootstrap](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_bootstrap.csv), [Stage 1 comparisons against Grad-CAM](results/slice_belief_cifar10_native32_fixed1000/tables/stage1_bootstrap.csv). Bootstrap comparisons are within the explanation pipeline; no cross-pipeline significance test was computed.
+| Detector | Noise incorrectly flagged |
+|---|---:|
+| Grad-CAM | 1% |
+| SLICE signed | 5% |
+| ResNet pooled | 42% |
+| DINOv2 | 100% |
 
-#### CW-trained Stage 1
+DINOv2’s strong FGSM performance therefore needs qualification: it also flags many randomly perturbed images. This is consistent with sensitivity to perturbations that are not specific to adversarial intent, without proving the underlying mechanism.
 
-| Features | PGD | APGD | CW | PATCH | FGSM | Actual clean FPR |
-| --- | --- | --- | --- | --- | --- | --- |
-| Grad-CAM | 0.445 / 3.4% | 0.387 / 2.2% | 0.774 / 28.6% | 0.784 / 23.6% | 0.719 / 21.8% | 4.3% |
-| SLICE | 0.397 / 1.3% | 0.375 / 0.0% | 0.515 / 5.2% | 0.480 / 4.0% | 0.498 / 2.5% | 5.7% |
-| BELIEF | 0.318 / 0.0% | 0.317 / 0.0% | 0.767 / 15.3% | 0.453 / 3.4% | 0.698 / 8.8% | 4.6% |
-| SLICE signed | 0.345 / 0.6% | 0.320 / 0.0% | 0.485 / 4.4% | 0.482 / 6.1% | 0.512 / 3.8% | 4.6% |
-| BELIEF signed | 0.297 / 0.0% | 0.296 / 0.0% | 0.778 / 14.9% | 0.448 / 3.0% | 0.702 / 9.7% | 6.3% |
-| Confidence | 0.017 / 0.0% | 0.008 / 0.0% | 0.887 / 55.6% | 0.410 / 0.3% | 0.783 / 23.5% | 4.6% |
-| Superpixel count | 0.717 / 29.8% | 0.711 / 32.0% | 0.557 / 14.9% | 0.456 / 6.4% | 0.772 / 41.2% | 10.3% |
+Explanation features are less sensitive to these noise controls, but that advantage must be weighed against their missed attacks. Actual clean-test false-alarm rates are **4.9% for Grad-CAM, 4.6% for SLICE signed, 2.6% for ResNet and 7.1% for DINOv2**. A 5% calibration target does not guarantee exactly 5% on new data, so these TPR comparisons are not at identical realized test FPR.
 
-| CW-trained features | gauss2 FPR | gauss4 FPR | gauss8 FPR | unif8 FPR |
-| --- | --- | --- | --- | --- |
-| Grad-CAM | 3.0% | 5.0% | 8.0% | 3.0% |
-| SLICE | 7.0% | 3.0% | 6.0% | 7.0% |
-| BELIEF | 6.0% | 6.0% | 10.0% | 5.0% |
-| SLICE signed | 7.0% | 7.0% | 4.0% | 7.0% |
-| BELIEF signed | 6.0% | 6.0% | 8.0% | 5.0% |
-| Confidence | 6.0% | 5.0% | 11.0% | 11.0% |
-| Superpixel count | 19.0% | 31.0% | 54.0% | 27.0% |
+#### 2.6.4 Many explanations collapse to empty maps
 
-CW training uses successful CW training positives and CW development tuning. Sources: [CW-trained detection](results/slice_belief_cifar10_native32_fixed1000/cw_train/stage1_detection.csv), [CW-trained noise](results/slice_belief_cifar10_native32_fixed1000/cw_train/stage1_noise.csv), [CW bootstrap](results/slice_belief_cifar10_native32_fixed1000/cw_train/stage1_bootstrap.csv).
+Empty maps are a key diagnostic for interpreting the detection results.
 
-#### Explanation quality, stability and cost
+| Test input | SLICE: empty positive map | BELIEF: empty positive map |
+|---|---:|---:|
+| Clean | 3.1% | 60.6% |
+| PGD | 85.3% | 99.7% |
+| APGD | 94.4% | 100% |
 
-| Method | Records | Zero positive maps | LIME fallback | All eliminated | Nonfinite status |
-| --- | --- | --- | --- | --- | --- |
-| SLICE | 4282 | 1442/4282 (33.7%) | 1543 | 0 | 0 |
-| BELIEF | 4282 | 2789/4282 (65.1%) | 0 | 2698 | 0 |
+For SLICE, empty maps are much more common under PGD/APGD. **That pattern could itself help detection**, without demonstrating that the method produces informative explanations of attacked predictions.
 
-Grad-CAM has 0/4282 (0.0%) zero positive feature maps on the required explanation inputs and zero prediction mismatches across all stored rows.
+BELIEF is frequently empty even on clean images. Its positive-only detector catches **zero attacks at the selected threshold**, despite nonzero AUC.
 
-Every stored coefficient array is readable, dimension-checked and finite. Zero maps and all-eliminated or fallback outputs are retained and reported; they are not silently dropped.
+Likewise, repeatedly producing an empty map can look perfectly “stable.” Stability alone is therefore insufficient evidence of explanation quality. These findings apply to the tested settings and mixed-precision execution; a full-precision comparison remains unresolved.
 
-| Test variant | Method | N | Zero positive maps | LIME fallback | All eliminated | Mean positive superpixels |
-| --- | --- | --- | --- | --- | --- | --- |
-| clean | SLICE | 350 | 3.1% | 7.4% | 0.0% | 4.731 |
-| clean | BELIEF | 350 | 60.6% | 0.0% | 56.9% | 1.291 |
-| pgd | SLICE | 319 | 85.3% | 92.5% | 0.0% | 1.508 |
-| pgd | BELIEF | 319 | 99.7% | 0.0% | 99.7% | 0.009 |
-| apgd | SLICE | 319 | 94.4% | 96.9% | 0.0% | 0.589 |
-| apgd | BELIEF | 319 | 100.0% | 0.0% | 100.0% | 0.000 |
-| cw | SLICE | 248 | 1.2% | 0.0% | 0.0% | 5.016 |
-| cw | BELIEF | 248 | 7.7% | 0.0% | 6.5% | 3.786 |
-| patch | SLICE | 297 | 13.8% | 16.2% | 0.0% | 4.101 |
-| patch | BELIEF | 297 | 71.4% | 0.0% | 67.3% | 0.933 |
-| fgsm | SLICE | 238 | 1.3% | 0.0% | 0.0% | 5.197 |
-| fgsm | BELIEF | 238 | 19.3% | 0.0% | 16.8% | 3.277 |
-| gauss2 | SLICE | 100 | 1.0% | 4.0% | 0.0% | 5.150 |
-| gauss2 | BELIEF | 100 | 52.0% | 0.0% | 48.0% | 1.640 |
-| gauss4 | SLICE | 100 | 3.0% | 5.0% | 0.0% | 4.960 |
-| gauss4 | BELIEF | 100 | 57.0% | 0.0% | 51.0% | 1.770 |
-| gauss8 | SLICE | 100 | 2.0% | 3.0% | 0.0% | 5.360 |
-| gauss8 | BELIEF | 100 | 45.0% | 0.0% | 40.0% | 2.230 |
-| unif8 | SLICE | 100 | 4.0% | 3.0% | 0.0% | 5.230 |
-| unif8 | BELIEF | 100 | 53.0% | 0.0% | 48.0% | 1.760 |
+#### 2.6.5 Training on more attack types does not consistently help
 
-High zero-map, all-eliminated or fallback rates limit interpretation as consistently informative local attributions. The detection results describe this fixed sigma and CUDA precision setting; they do not establish how a full-precision rerun would compare.
+Stage 2 compares mixture training against a **refitted, matched PGD-only control**, using identical source pools and equal training counts within each holdout. The held-out attack is excluded from both fitting and tuning. This PGD-only control differs from the full Stage-1 detector in §2.6.2.
 
-| Panel | Method | Inputs | Repeats | Zero positive maps | Sign agreement | Top-3 Jaccard | Spearman | Valid Spearman pairs | Detector-score SD |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| clean | SLICE | 20 | 5 | 0.0% | 0.889 | 0.708 | 0.897 | 200 | 0.048 |
-| clean | BELIEF | 20 | 5 | 55.0% | 0.971 | 0.924 | 0.912 | 90 | 0.005 |
-| clean | Grad-CAM | 20 | deterministic | — | 1.000 | 1.000 | 1.000 | — | 0.000 |
-| pgd | SLICE | 18 | 5 | 80.0% | 0.930 | 0.871 | 0.578 | 33 | 0.036 |
-| pgd | BELIEF | 18 | 5 | 100.0% | 1.000 | 1.000 | undefined | 0 | 0.000 |
-| pgd | Grad-CAM | 18 | deterministic | — | 1.000 | 1.000 | 1.000 | — | 0.000 |
+The table includes all five explanation feature sets and three held-out attacks. Values are **means over three allocation seeds**. TPR uses each fitted detector's threshold calibrated to target 5% clean false alarms; actual clean-test FPR is shown alongside it. **Bold positive AUC changes** identify setups with higher observed mean AUC under mixture training; they do not imply statistically established gains.
 
-The Grad-CAM stability row is the pipeline's deterministic-control assumption, not a repeated CUDA measurement. SLICE and BELIEF are the methods actually recomputed five times per selected input. Two empty positive maps receive Jaccard 1; Spearman excludes constant coefficient arrays. Interpret stability together with panel zero-map rates and valid Spearman-pair counts.
+| Held-out attack | Features | PGD-only AUC / TPR | Mixture AUC / TPR | AUC change | Actual clean FPR: PGD-only → mixture |
+| --- | --- | ---: | ---: | ---: | ---: |
+| CW | Grad-CAM | 0.531 / 9.3% | 0.705 / 21.2% | **+0.174** | 4.3% → 5.9% |
+| CW | SLICE | 0.494 / 4.4% | 0.499 / 4.0% | **+0.005** | 4.9% → 2.4% |
+| CW | BELIEF | 0.214 / 0.8% | 0.247 / 6.5% | **+0.034** | 1.7% → 4.4% |
+| CW | SLICE signed | 0.528 / 2.4% | 0.518 / 1.6% | -0.011 | 4.3% → 4.3% |
+| CW | BELIEF signed | 0.219 / 0.0% | 0.313 / 10.5% | **+0.094** | 0.0% → 5.9% |
+| PATCH | Grad-CAM | 0.478 / 6.4% | 0.663 / 10.7% | **+0.185** | 6.3% → 5.1% |
+| PATCH | SLICE | 0.580 / 0.3% | 0.571 / 1.9% | -0.009 | 0.9% → 1.9% |
+| PATCH | BELIEF | 0.549 / 0.7% | 0.476 / 3.8% | -0.073 | 1.1% → 7.1% |
+| PATCH | SLICE signed | 0.601 / 16.2% | 0.590 / 16.3% | -0.011 | 4.0% → 5.0% |
+| PATCH | BELIEF signed | 0.557 / 0.3% | 0.498 / 5.7% | -0.059 | 0.0% → 7.3% |
+| APGD | Grad-CAM | 0.921 / 68.3% | 0.675 / 19.5% | -0.245 | 6.9% → 5.9% |
+| APGD | SLICE | 0.947 / 94.4% | 0.840 / 0.1% | -0.107 | 4.0% → 6.6% |
+| APGD | BELIEF | 0.680 / 0.6% | 0.423 / 0.0% | -0.257 | 2.0% → 6.7% |
+| APGD | SLICE signed | 0.963 / 94.7% | 0.919 / 31.6% | -0.043 | 3.7% → 5.9% |
+| APGD | BELIEF signed | 0.716 / 0.0% | 0.448 / 0.0% | -0.268 | 0.0% → 5.9% |
 
-| Panel | Method | N | AOPC deletion mean ± SE |
-| --- | --- | --- | --- |
-| clean | Grad-CAM | 350 | -4.779e-05 ± 4.208e-05 |
-| clean | SLICE | 350 | 0.000679 ± 8.492e-05 |
-| clean | BELIEF | 350 | 0.0006248 ± 8.174e-05 |
-| clean | random | 350 | -4.977e-05 ± 3.321e-05 |
-| pgd | Grad-CAM | 319 | 8.386e-07 ± 9.06e-07 |
-| pgd | SLICE | 319 | 2.406e-06 ± 1.965e-06 |
-| pgd | BELIEF | 319 | 1.406e-06 ± 1.492e-06 |
-| pgd | random | 319 | 1.383e-06 ± 1.395e-06 |
+**Which setups benefit?** Mean AUC increases in **5 of 15 comparisons**: Grad-CAM, SLICE, BELIEF and BELIEF signed on held-out CW, and Grad-CAM on held-out patch. Every explanation method loses mean AUC on held-out APGD. Grad-CAM shows the clearest AUC tradeoff: CW improves from 0.531 to 0.705 and patch from 0.478 to 0.663, while APGD drops from 0.921 to 0.675.
 
-| Method / timing origin | Median seconds/input | Mean seconds/input | P90 seconds/input | Median queries | P90 queries |
-| --- | --- | --- | --- | --- | --- |
-| slice (local CUDA) | 2.627 | 2.4 | 4.129 | 2995.0 | 4991.0 |
-| belief (local CUDA) | 0.2875 | 0.2974 | 0.3892 | 500.0 | 500.0 |
-| gradcam (local CUDA) | 0.001244 | 0.001216 | — | 1 | — |
-| quickshift (shared by SLICE/BELIEF) (transferred CPU segmentation) | 0.6436 | 0.6608 | — | — | — |
+**AUC gains do not always mean better detection at the chosen threshold.** SLICE's CW AUC rises slightly, but its TPR falls from 4.4% to 4.0%. Conversely, some patch TPRs rise despite lower AUC, sometimes alongside higher clean FPR. BELIEF and BELIEF signed remain below chance-level CW AUC even after their improvements. The table therefore identifies gains in ranking separately from operational detection and false-alarm costs.
 
-SLICE and BELIEF standalone costs each include their shared initial sample, so their columns should not be summed as the joint run time. These timers exclude shared context creation and segmentation. Grad-CAM's displayed mean/median are unweighted aggregates of 21 shard-level per-image batch times, rather than individual-image latency percentiles. Quickshift measurements come from the transferred segmentation and are kept separate from the CUDA extraction benchmark. Fidelity uses the saved blur-fill policy and five top-positive-superpixel deletion ranks (plus a random-ranking control); it does not separately measure deletion of negative evidence and is not a detector robustness metric.
+Source: [three-seed matched Stage-2 results](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_summary.csv). The saved [bootstrap intervals](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_bootstrap.csv) describe the primary seed only, not uncertainty in the three-seed mean. These results suggest a tradeoff between learning different attack signatures, rather than a consistent benefit from greater training diversity.
 
-Sources: [explanation status](results/slice_belief_cifar10_native32_fixed1000/tables/explanation_status.csv), [stability](results/slice_belief_cifar10_native32_fixed1000/tables/stability.csv), [fidelity summary](results/slice_belief_cifar10_native32_fixed1000/tables/fidelity_summary.csv), [per-input fidelity](results/slice_belief_cifar10_native32_fixed1000/fidelity.csv), [runtime/query cost](results/slice_belief_cifar10_native32_fixed1000/tables/cost.csv).
+#### 2.6.6 Training specifically on CW changes the result
 
-**Execution and cache decision:** Python 3.12.10, NVIDIA GeForce RTX 4070 Ti, CUDA runtime 12.4; torch 2.4.1+cu124, torchvision 0.19.1+cu124, numpy 1.26.4, scipy 1.13.1, scikit-learn 1.4.2, scikit-image 0.23.2, torchattacks 3.5.1. All primary Grad-CAM, SLICE/BELIEF and repeat caches were regenerated locally. Perturbation-model queries use CUDA float16 autocast/channels-last, Grad-CAM and the audit use float32, and regression uses CPU float64. TF32 is disabled: the default cuDNN TF32 path changed one clean prediction, while full CUDA FP32 agrees with CPU FP32/FP64 and the saved baseline. The strict zero-mismatch audit was then rerun over every block. The transferred 220 MPS full-precision explanations and partial repeat directory are preserved under `data/processed/slice_belief_cifar10_native32_fixed1000/archives/mps_transfer_20261123/`; none enters the primary explanation results or CUDA timing. The handoff stated 200 records; the unchanged checkpoint and original MPS log show 220. Segmentation and the MPS development-selected sigma 0.3 are reused. Seeds, splits, attack tensors, explanation budgets, and detector/calibration protocol are unchanged. The requested tests passed with 53 passed and 1 skipped (MPS unavailable); the added CUDA mixed-precision query test passed. The pinned upstream reference cases also ran locally; [reference provenance](results/slice_belief_cifar10_native32_fixed1000/reference_validation.json) records source commits, hashes, optional test dependencies and the separate parity run. Sources: [environment and archive hashes](results/slice_belief_cifar10_native32_fixed1000/execution_environment.json), [numerical diagnosis](results/slice_belief_cifar10_native32_fixed1000/audit_attempts/numerical_diagnosis.json), [package lock](results/slice_belief_cifar10_native32_fixed1000/requirements-windows-cuda.lock.txt), [test transcript](results/slice_belief_cifar10_native32_fixed1000/pytest.txt).
+For CW detection:
+
+| Features | PGD-trained AUC | CW-trained AUC |
+|---|---:|---:|
+| Grad-CAM | 0.500 | 0.774 |
+| BELIEF signed | 0.235 | 0.778 |
+| Confidence baseline | 0.113 | **0.887** |
+| ResNet pooled | 0.645 | 0.698 |
+
+The simple confidence baseline catches **55.6% of successful CW attacks** after CW training, with 4.6% clean false alarms. However, its PGD/APGD detection collapses.
+
+**The defensible project conclusion is that detection depends strongly on the attack family used for training.** These results do not establish a universally best detector or show that better explanation maps necessarily yield better detection. They instead reveal useful tradeoffs among attack coverage, noise sensitivity, and explanation reliability. All attacks here are non-adaptive—they were not optimized to evade the detector. Feature dimensions and extraction precision differ across pipelines, and no cross-pipeline significance test was performed.
+
+Detailed results and provenance: [full experiment report](results/slice_belief_cifar10_native32_fixed1000/MAIN_RESULTS.md), [PGD-trained detection](results/slice_belief_cifar10_native32_fixed1000/tables/stage1_detection.csv), [noise controls](results/slice_belief_cifar10_native32_fixed1000/tables/stage1_noise.csv), [matched Stage 2](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_summary.csv), [CW-trained detection](results/slice_belief_cifar10_native32_fixed1000/cw_train/stage1_detection.csv), [explanation status](results/slice_belief_cifar10_native32_fixed1000/tables/explanation_status.csv), and [validation](results/slice_belief_cifar10_native32_fixed1000/validation.json). The full report retains all methods, uncertainty intervals, fidelity, stability, timing and execution details.
+
 <!-- cifar10-native32-explanation:end -->
+
 
 ## 3. Representation-based pipeline
 
@@ -611,3 +546,16 @@ Cells show AUC / TPR at the 5% calibration target. Stage 2 uses three-seed means
 
 **Native-32 CIFAR-10 findings.** The highest observed Stage 1 AUC among the five explanation-map feature sets is PGD: Grad-CAM 0.917 versus ResNet pooled 1.000; APGD: SLICE signed 0.961 versus ResNet pooled 1.000; CW: SLICE signed 0.528 versus ResNet pooled 0.645; PATCH: SLICE signed 0.583 versus ResNet pooled 0.872; FGSM: Grad-CAM 0.586 versus ResNet pooled 0.864. These are descriptive comparisons selected after evaluation; the detailed tables retain all methods, TPRs and actual clean/noise FPRs. Mixture training raises the three-seed mean held-out AUC in 5/15 explanation-map × holdout comparisons. The [primary-seed bootstrap intervals](results/slice_belief_cifar10_native32_fixed1000/tables/stage2_bootstrap.csv) quantify individual within-pipeline arm comparisons; they are not cross-pipeline tests or a multiple-comparison-adjusted claim. The CIFAR-10 classifier has ten outputs, so this result does not inherit Imagenette's out-of-class membership confound.
 <!-- cifar10-native32-representation:end -->
+
+
+### 3.8 What the comparison supports
+
+**ResNet offers stronger attack discrimination, with a noise cost.** On native-32 CIFAR-10 it detects 99.7% of successful PGD/APGD attacks and has higher Stage-1 AUC than every explanation-map feature set for all five attack families. Yet CW detection remains only 11.3%. Its Gaussian-8/255 false-alarm rate is 42%, compared with 1% for Grad-CAM and 5% for SLICE signed. Actual clean FPRs are 2.6%, 4.9% and 4.6%, respectively. The representation advantage therefore depends on which attacks and benign perturbations matter; these are not comparisons at identical realized test FPR.
+
+**DINOv2's FGSM result is qualified by its noise sensitivity.** It detects 99.6% of successful FGSM attacks, but also flags 100% of Gaussian-8/255 inputs and 39% even at Gaussian-2/255, with 7.1% clean FPR. This is consistent with sensitivity to perturbations that are not specific to adversarial intent; it does not prove the underlying mechanism. DINOv2 observes attacks aimed at ResNet, so the experiment does not measure detection of attacks targeted at DINOv2 itself.
+
+**Mixture training can reduce noise alarms without improving held-out AUC.** For example, the ResNet CW holdout's mean noise FPR falls from 27.3% to 8.2%, while CW AUC falls from 0.644 to 0.624 and TPR from 12.5% to 10.1%. Calling this simply an improvement or a failure would omit the tradeoff. Which operating point is preferable depends on the cost of missed attacks versus false alarms.
+
+**The supported conclusion is limited to these complete pipelines and saved corpora.** Explanation maps do not outperform ResNet representations in PGD-trained Stage-1 AUC, but some yield fewer noise alarms. Empty-map behavior prevents interpreting successful detection as evidence of better explanations. CIFAR-10 removes the Imagenette out-of-class membership confound, but feature dimensions and extraction precision still differ, and no cross-pipeline significance test was performed. The attacks are non-adaptive and do not optimize against the detector.
+
+The most informative follow-up comparisons would isolate the empty-map signal, check explanation precision sensitivity, and test whether training with ordinary noisy negatives reduces representation false alarms while retaining attack detection. These are proposed experiments, not demonstrated improvements.

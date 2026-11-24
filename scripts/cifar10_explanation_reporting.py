@@ -326,6 +326,10 @@ def update_combined(repo=Path(".")):
         block = f"{start}\n{heading}\n\n{content}\n{end}\n\n"
         if start in text:
             a, b = text.index(start), text.index(end) + len(end)
+            # Keep the user-edited combined-report summary; full tables are
+            # still regenerated independently in MAIN_RESULTS.md.
+            if "<!-- editorial-summary: preserve during report regeneration -->" in text[a:b]:
+                continue
             text = text[:a] + block.rstrip() + text[b:]
         elif before:
             text = text.replace(before, block + before, 1)
