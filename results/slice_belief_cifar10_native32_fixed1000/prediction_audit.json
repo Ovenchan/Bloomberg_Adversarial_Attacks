@@ -1,0 +1,139 @@
+{
+  "status": "passed",
+  "corpus_files": {
+    "manifest.csv": "3a61c09ac16209f139b70122651baed9b8bb533fd0ff5c91a95db98cdaa08289",
+    "variants.csv": "c34c18e12108fa97bdd1121400c452a5daf4cb0a61e9736160b1eced4a9ff897",
+    "corpus.json": "140c240362b70034ae2d4fb3b97ded5b56e11c0a5ba0c1f4c44ab65a8c9a553e"
+  },
+  "blocks": [
+    {
+      "block": "cal_clean",
+      "rows": 200,
+      "sha256": "78ce821fae44cf07483243d934cb6d05fac6a4b26fd18373fd691a2f815bf00f",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "dev_apgd",
+      "rows": 100,
+      "sha256": "b9214954dc9be59ae33103452ed7f0113c4a8dfbadb021589eec4fbb8709bbba",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "dev_clean",
+      "rows": 100,
+      "sha256": "da93ae70f66323eba039826d783239b70f02eaf3eb055ec1921a9c0f9057cc26",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "dev_cw",
+      "rows": 100,
+      "sha256": "76b5be2c9b488738bc816062a3bb0dcf1c9d2e4ef305e63626bd920e986e1530",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "dev_patch",
+      "rows": 100,
+      "sha256": "9d1f8e88809684b1864699d73058ca2fa99fd5b77e26ce161b1efd720996d857",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "dev_pgd",
+      "rows": 100,
+      "sha256": "af75518119c13e65cf1c3aa9232b0fc931aff517a76cffee53c64e42f2bdc1a1",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_apgd",
+      "rows": 350,
+      "sha256": "57ed4ffbf32fe436eb23b107c8c88d277ec6f12b2dac87fc7a176fa0e763a6c2",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_clean",
+      "rows": 350,
+      "sha256": "78bc324b6e5429f53a7f101816561d7bfc1f17619633bf64a3096bd6580e516f",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_cw",
+      "rows": 350,
+      "sha256": "4bef9dd702654904a4a5807031c45bba1180e26ac7b0683f24d2e3922d82919a",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_fgsm",
+      "rows": 350,
+      "sha256": "f31ff1386f6534ddae51bd262cc934e2f77f00e47cdb3e9aa31519e861d4ebe3",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_gauss2",
+      "rows": 100,
+      "sha256": "bbb18aa5682b3072f9e8415141439ec79838ade70446316e954000097b9f85e5",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_gauss4",
+      "rows": 100,
+      "sha256": "6964370f6fc6ac85348b3328bed3657def62966e6b5a9eb686c893e9e219d683",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_gauss8",
+      "rows": 100,
+      "sha256": "8ab9e37fa472567a7acd34e9478b7042943db87f977c7049d53d3a65c41dfe3e",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_patch",
+      "rows": 350,
+      "sha256": "07afb708b6d37898e8ac7804df516aa6ac92fdf8aabf064253b90b16db295a80",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_pgd",
+      "rows": 350,
+      "sha256": "dd727d975a314ab6d14d342d42ccb02572aafdeb656e97fa141ccd097ba07767",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "test_unif8",
+      "rows": 100,
+      "sha256": "052e58dcba7f68733f78d39783013cc50df67c02a44b874f9239233cb4c9ecf6",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "train_apgd",
+      "rows": 350,
+      "sha256": "e997020e3420faee78a416dc403db81fb0aa3d785b8c89162f49f1950b374716",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "train_clean",
+      "rows": 350,
+      "sha256": "3304c0992e1b842c4b55423f623071c302c6a423fea8d93246ecf97fa2cf7349",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "train_cw",
+      "rows": 350,
+      "sha256": "e5df357a8e80db5dd6a1bf58845cbd90b97d2fe760896d632c0aa0c4e0cb8ad9",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "train_patch",
+      "rows": 350,
+      "sha256": "d7edc4c1ad8147d3dea02b4399b0a900fbfb7569740e0f7e0d56635fb9802658",
+      "prediction_mismatches": 0
+    },
+    {
+      "block": "train_pgd",
+      "rows": 350,
+      "sha256": "d8611c83261d417790b389fba6b46f7245b7794e1ebc29a5437e6766d4d62763",
+      "prediction_mismatches": 0
+    }
+  ],
+  "head_sha256": "ba60b4cb9246521ba8f02d7e5917a08c8fd782f9a19fa5b070e0bbe33fb4d371",
+  "device": "cuda",
+  "torch": "2.4.1+cu124"
+}

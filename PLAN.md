@@ -2,7 +2,9 @@
 
 Prepared November 2, 2026, for Yunxuan Chen, Ying Jin, and Cara Zhu.
 
-This plan operationalizes [Research Proposal.md](Research%20Proposal.md), informed by the [previous team's report](Adversarial_Attacks_Report_Final.pdf), the supplied code and saved results, and the authors' SLICE and BELIEF implementations. It is a plan for implementation and experiments; the new experiments have not been run.
+This plan operationalizes [Research Proposal.md](Research%20Proposal.md), informed by the [previous team's report](Adversarial_Attacks_Report_Final.pdf), the supplied code and saved results, and the authors' SLICE and BELIEF implementations. It records the original implementation plan.
+
+**Execution status, November 23, 2026:** the Imagenette core and native-32 CIFAR-10 explanation/representation comparisons are completed. Current results, validation and limitations are in [COMBINED_EXPERIMENT_REPORT.md](COMBINED_EXPERIMENT_REPORT.md), [NEW_EXPERIMENTS_REPORT.md](NEW_EXPERIMENTS_REPORT.md) and the [native-32 CIFAR-10 report](results/slice_belief_cifar10_native32_fixed1000/MAIN_RESULTS.md). The planning targets below remain historical; the implemented fixed-1,000 configurations and saved artifacts define the executed protocol. DINOv3 remains a conditional extension.
 
 The central question is whether explanation and representation features detect successful adversarial manipulation beyond the signatures of the attacks used for detector training. The study will first establish a trustworthy evaluation protocol, then implement SLICE and BELIEF in PyTorch, and finally compare single-attack and multiple-attack detector training.
 

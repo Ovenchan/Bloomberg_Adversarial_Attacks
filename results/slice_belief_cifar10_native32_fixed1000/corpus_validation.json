@@ -1,0 +1,291 @@
+{
+  "status": "passed",
+  "source_images": 1000,
+  "unused_reserve_manifest_rows": 9000,
+  "splits": {
+    "train": 350,
+    "dev": 100,
+    "cal": 200,
+    "test": 350
+  },
+  "metadata_hashes_match_original": true,
+  "image_files": 21,
+  "total_tensor_rows": 4950,
+  "source_split_and_success_masks": "passed",
+  "shape_finite_pixel_range_checks": "passed",
+  "tensors": [
+    {
+      "file": "cal_clean.pt",
+      "rows": 200,
+      "shape": [
+        200,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "78ce821fae44cf07483243d934cb6d05fac6a4b26fd18373fd691a2f815bf00f",
+      "matches_original": true
+    },
+    {
+      "file": "dev_apgd.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "b9214954dc9be59ae33103452ed7f0113c4a8dfbadb021589eec4fbb8709bbba",
+      "matches_original": true
+    },
+    {
+      "file": "dev_clean.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "da93ae70f66323eba039826d783239b70f02eaf3eb055ec1921a9c0f9057cc26",
+      "matches_original": true
+    },
+    {
+      "file": "dev_cw.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "76b5be2c9b488738bc816062a3bb0dcf1c9d2e4ef305e63626bd920e986e1530",
+      "matches_original": true
+    },
+    {
+      "file": "dev_patch.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "9d1f8e88809684b1864699d73058ca2fa99fd5b77e26ce161b1efd720996d857",
+      "matches_original": true
+    },
+    {
+      "file": "dev_pgd.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "af75518119c13e65cf1c3aa9232b0fc931aff517a76cffee53c64e42f2bdc1a1",
+      "matches_original": true
+    },
+    {
+      "file": "test_apgd.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "57ed4ffbf32fe436eb23b107c8c88d277ec6f12b2dac87fc7a176fa0e763a6c2",
+      "matches_original": true
+    },
+    {
+      "file": "test_clean.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "78bc324b6e5429f53a7f101816561d7bfc1f17619633bf64a3096bd6580e516f",
+      "matches_original": true
+    },
+    {
+      "file": "test_cw.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "4bef9dd702654904a4a5807031c45bba1180e26ac7b0683f24d2e3922d82919a",
+      "matches_original": true
+    },
+    {
+      "file": "test_fgsm.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "f31ff1386f6534ddae51bd262cc934e2f77f00e47cdb3e9aa31519e861d4ebe3",
+      "matches_original": true
+    },
+    {
+      "file": "test_gauss2.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "bbb18aa5682b3072f9e8415141439ec79838ade70446316e954000097b9f85e5",
+      "matches_original": true
+    },
+    {
+      "file": "test_gauss4.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "6964370f6fc6ac85348b3328bed3657def62966e6b5a9eb686c893e9e219d683",
+      "matches_original": true
+    },
+    {
+      "file": "test_gauss8.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "8ab9e37fa472567a7acd34e9478b7042943db87f977c7049d53d3a65c41dfe3e",
+      "matches_original": true
+    },
+    {
+      "file": "test_patch.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "07afb708b6d37898e8ac7804df516aa6ac92fdf8aabf064253b90b16db295a80",
+      "matches_original": true
+    },
+    {
+      "file": "test_pgd.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "dd727d975a314ab6d14d342d42ccb02572aafdeb656e97fa141ccd097ba07767",
+      "matches_original": true
+    },
+    {
+      "file": "test_unif8.pt",
+      "rows": 100,
+      "shape": [
+        100,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "052e58dcba7f68733f78d39783013cc50df67c02a44b874f9239233cb4c9ecf6",
+      "matches_original": true
+    },
+    {
+      "file": "train_apgd.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "e997020e3420faee78a416dc403db81fb0aa3d785b8c89162f49f1950b374716",
+      "matches_original": true
+    },
+    {
+      "file": "train_clean.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "3304c0992e1b842c4b55423f623071c302c6a423fea8d93246ecf97fa2cf7349",
+      "matches_original": true
+    },
+    {
+      "file": "train_cw.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "e5df357a8e80db5dd6a1bf58845cbd90b97d2fe760896d632c0aa0c4e0cb8ad9",
+      "matches_original": true
+    },
+    {
+      "file": "train_patch.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "d7edc4c1ad8147d3dea02b4399b0a900fbfb7569740e0f7e0d56635fb9802658",
+      "matches_original": true
+    },
+    {
+      "file": "train_pgd.pt",
+      "rows": 350,
+      "shape": [
+        350,
+        3,
+        224,
+        224
+      ],
+      "dtype": "torch.float32",
+      "sha256": "d8611c83261d417790b389fba6b46f7245b7794e1ebc29a5437e6766d4d62763",
+      "matches_original": true
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 .venv/
 .venv-corpus/
+.venv-corpus-win/
+results/slice_belief_cifar10_native32_fixed1000/runner.lock
 __pycache__/
 *.pyc
 data/raw/

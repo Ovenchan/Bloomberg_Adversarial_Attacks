@@ -21,6 +21,7 @@ Pixel-space contract (documented deviation log: SLICE_BELIEF_result.md):
 
 import random
 import time
+from contextlib import nullcontext
 from dataclasses import dataclass
 
 import numpy as np
@@ -78,11 +79,11 @@ class ProbabilityAdapter:
             batch = images[start:start + self.batch_size]
             if self.channels_last:
                 batch = batch.contiguous(memory_format=torch.channels_last)
-            with torch.autocast(
-                device_type=device_type,
-                dtype=torch.float16,
-                enabled=self.use_amp and device_type == "cuda",
-            ):
+            # Older PyTorch rejects device_type="mps" even with enabled=False.
+            # Mixed precision is CUDA-only; other devices retain full precision.
+            precision = (torch.autocast(device_type="cuda", dtype=torch.float16)
+                         if self.use_amp and device_type == "cuda" else nullcontext())
+            with precision:
                 logits = self.model(batch)
             if logits.dtype in (torch.float16, torch.bfloat16):
                 logits = logits.float()
@@ -265,7 +266,9 @@ class PerturbationQueryEngine:
                 self.adapter.probabilities(images, context.target_class)
             )
         context.num_queries += int(masks.shape[0])
-        return torch.cat(outputs).to("cpu", REGRESSION_DTYPE)
+        # Move first: a combined device/dtype conversion may attempt float64
+        # on the source MPS device, which does not support that dtype.
+        return torch.cat(outputs).cpu().to(REGRESSION_DTYPE)
 
 
 # --------------------------------------------------------------------------

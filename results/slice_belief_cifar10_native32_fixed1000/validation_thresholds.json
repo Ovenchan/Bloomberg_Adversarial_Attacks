@@ -1,0 +1,194 @@
+{
+  "pgd/gradcam/0.01": {
+    "threshold": 0.9175575356562591,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.002857142857142857
+  },
+  "pgd/gradcam/0.05": {
+    "threshold": 0.6521308655580987,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.04857142857142857
+  },
+  "pgd/slice/0.01": {
+    "threshold": 0.8196044606310803,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.002857142857142857
+  },
+  "pgd/slice/0.05": {
+    "threshold": 0.7614220729738994,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.04285714285714286
+  },
+  "pgd/belief/0.01": {
+    "threshold": 0.584419429667378,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "pgd/belief/0.05": {
+    "threshold": 0.584419429667378,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "pgd/slice_signed/0.01": {
+    "threshold": 0.9038877643410065,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "pgd/slice_signed/0.05": {
+    "threshold": 0.6479699621156808,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.045714285714285714
+  },
+  "pgd/belief_signed/0.01": {
+    "threshold": 0.6156596963406654,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.002857142857142857
+  },
+  "pgd/belief_signed/0.05": {
+    "threshold": 0.6156596963406654,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.002857142857142857
+  },
+  "pgd/confidence/0.01": {
+    "threshold": 0.599924246242993,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.005714285714285714
+  },
+  "pgd/confidence/0.05": {
+    "threshold": 0.5998789163854105,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.05142857142857143
+  },
+  "pgd/imagenette_indicator/0.01": {
+    "threshold": 0.46646548969130125,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "pgd/imagenette_indicator/0.05": {
+    "threshold": 0.46646548969130125,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "pgd/segments/0.01": {
+    "threshold": 0.5766053816207359,
+    "calibration_n": 200,
+    "calibration_fpr": 0.005,
+    "clean_test_fpr": 0.054285714285714284
+  },
+  "pgd/segments/0.05": {
+    "threshold": 0.5432653869486389,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.10285714285714286
+  },
+  "cw/gradcam/0.01": {
+    "threshold": 0.7663662218385205,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.014285714285714285
+  },
+  "cw/gradcam/0.05": {
+    "threshold": 0.701286585644991,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.04285714285714286
+  },
+  "cw/slice/0.01": {
+    "threshold": 0.7012892224708948,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.022857142857142857
+  },
+  "cw/slice/0.05": {
+    "threshold": 0.6155293314703228,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.05714285714285714
+  },
+  "cw/belief/0.01": {
+    "threshold": 0.8871059468669732,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.011428571428571429
+  },
+  "cw/belief/0.05": {
+    "threshold": 0.7616124277058287,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.045714285714285714
+  },
+  "cw/slice_signed/0.01": {
+    "threshold": 0.7752035125806225,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.02
+  },
+  "cw/slice_signed/0.05": {
+    "threshold": 0.6831556132676012,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.045714285714285714
+  },
+  "cw/belief_signed/0.01": {
+    "threshold": 0.9203728806417265,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.017142857142857144
+  },
+  "cw/belief_signed/0.05": {
+    "threshold": 0.8457658728226621,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.06285714285714286
+  },
+  "cw/confidence/0.01": {
+    "threshold": 0.9192823878700692,
+    "calibration_n": 200,
+    "calibration_fpr": 0.01,
+    "clean_test_fpr": 0.022857142857142857
+  },
+  "cw/confidence/0.05": {
+    "threshold": 0.7283560167722797,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.045714285714285714
+  },
+  "cw/imagenette_indicator/0.01": {
+    "threshold": 0.4017184704979363,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "cw/imagenette_indicator/0.05": {
+    "threshold": 0.4017184704979363,
+    "calibration_n": 200,
+    "calibration_fpr": 0.0,
+    "clean_test_fpr": 0.0
+  },
+  "cw/segments/0.01": {
+    "threshold": 0.42264523562119416,
+    "calibration_n": 200,
+    "calibration_fpr": 0.005,
+    "clean_test_fpr": 0.054285714285714284
+  },
+  "cw/segments/0.05": {
+    "threshold": 0.4178784150644561,
+    "calibration_n": 200,
+    "calibration_fpr": 0.05,
+    "clean_test_fpr": 0.10285714285714286
+  }
+}

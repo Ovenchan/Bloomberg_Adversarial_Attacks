@@ -1,0 +1,11 @@
+# Preserve checksum-bearing experiment artifacts exactly across platforms.
+results/** -text
+
+# These files are also fingerprinted by the native-32 run or report checks.
+COMBINED_EXPERIMENT_REPORT.md text eol=lf
+NEW_EXPERIMENTS_REPORT.md text eol=lf
+experiments/slice_belief.py text eol=lf
+explainers/slice.py text eol=lf
+explainers/belief.py text eol=lf
+explainers/perturbation.py text eol=lf
+configs/experiments/slice_belief_cifar10_native32_fixed1000.yaml text eol=lf

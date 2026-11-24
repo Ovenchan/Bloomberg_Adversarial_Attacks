@@ -7,6 +7,8 @@ from pathlib import Path
 # Reads saved result CSVs plus each corpus's variants.csv and rewrites NEW_EXPERIMENTS_REPORT.md
 # and results/corpus_summary_imagenette_cifar10.csv. Fails if the reproduction check does not match.
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.cifar10_explanation_reporting import Native32Report
 REPO = Path(os.environ.get("REPO", "."))
 DATA = Path(sys.argv[1] if len(sys.argv) > 1 else os.environ.get("DATA", "data/processed"))
 R = REPO / "results"
@@ -77,6 +79,7 @@ C32_DINO_CW, C32_DINO_CW_N, C32_DINO_CW_EV = rep_stage1("dinov2_observer_cifar10
 IN_STATS = corpus_stats(DATA / "slice_belief_fixed1000")
 C224_STATS = corpus_stats(DATA / "slice_belief_cifar10_fixed1000")
 C32_STATS = corpus_stats(DATA / "slice_belief_cifar10_native32_fixed1000")
+C32_EXPLANATIONS = Native32Report(REPO)
 
 # reproduction check
 keys = ["auc", "tpr@0.01", "tpr@0.05", "clean_fpr@0.05", "C", "dev_auc", "num_successful"]
@@ -107,7 +110,7 @@ W("This report extends [COMBINED_EXPERIMENT_REPORT.md](COMBINED_EXPERIMENT_REPOR
 W("")
 W("1. **DINOv2 observer on Imagenette**: frozen DINOv2 ViT-S/14 embeddings of the existing ResNet attack corpus (Stage 1 and Stage 2).")
 W("2. **CW-only training**: Stage 1 detectors trained and tuned on CW instead of PGD, for ResNet, DINOv2 and all explanation methods.")
-W("3. **CIFAR-10**: a fixed 1,000-image CIFAR-10 corpus attacked at the native 32×32 resolution, with ResNet and DINOv2 Stage 1 and Stage 2.")
+W("3. **CIFAR-10**: a fixed 1,000-image corpus attacked at native 32×32 resolution, with Grad-CAM/SLICE/BELIEF, ResNet and DINOv2 comparisons, PGD/CW-trained Stage 1, matched Stage 2, noise controls, and explanation quality/cost.")
 W("")
 W("All numbers below are read from the linked result files by a script, not copied by hand. Unless stated otherwise, "
   "cells are **AUC / detection rate (TPR) at the 5% clean-calibration target**, and noise columns are false-alarm "
@@ -133,6 +136,7 @@ W("- **CIFAR-10 attacked at 224×224 is a misleading benchmark.** Attacks/noise 
 W(f"- **On native CIFAR-10, ResNet features reproduce the Imagenette pattern**: PGD/APGD near-perfect, patch intermediate "
   f"({f(C32_RES['patch']['auc'])}), CW hardest ({f(C32_RES['cw']['auc'])}, {pct(C32_RES['cw']['tpr@0.05'],0)} detected).")
 W("- **Mixture training (Stage 2) does not raise held-out AUC** for ResNet or DINOv2 on either dataset, but it often lowers noise false alarms.")
+W("- " + C32_EXPLANATIONS.findings())
 W("")
 
 # ---------------- section 1
@@ -207,9 +211,11 @@ W(f"CW training improves every method, most for the signed SLICE/BELIEF maps, ye
 W("")
 W("### CIFAR-10 (native 32×32): CW detection by training attack")
 W("")
-W(table(["Features", "PGD-trained: CW", "CW-trained: CW", "CW-trained dev AUC"],
-        [["ResNet pooled", cell(C32_RES["cw"]), cell(C32_RES_CW["cw"]), f(C32_RES_CW_EV["dev_auc"])],
-         ["DINOv2", cell(C32_DINO["cw"]), cell(C32_DINO_CW["cw"]), f(C32_DINO_CW_EV["dev_auc"])]]))
+W(table(["Features", "PGD-trained: CW", "CW-trained: CW", "CW-trained dev AUC", "CW-trained clean FPR", *[NAME[n] + " FPR" for n in NOISE]],
+        [["ResNet pooled", cell(C32_RES["cw"]), cell(C32_RES_CW["cw"]), f(C32_RES_CW_EV["dev_auc"]),
+          pct(C32_RES_CW["cw"]["clean_fpr@0.05"]), *[pct(C32_RES_CW_N[n]["fpr@0.05"]) for n in NOISE]],
+         ["DINOv2", cell(C32_DINO["cw"]), cell(C32_DINO_CW["cw"]), f(C32_DINO_CW_EV["dev_auc"]),
+          pct(C32_DINO_CW["cw"]["clean_fpr@0.05"]), *[pct(C32_DINO_CW_N[n]["fpr@0.05"]) for n in NOISE]]]))
 W("")
 W("### Context from the literature")
 W("")
@@ -281,14 +287,24 @@ W(f"Successful test attacks: {succ_list}. "
 W("")
 W("### 3.5 Stage 2 (native-32)")
 W("")
+
 W(table(["Features", "Held out", "Arm", "N clean + N attacked", "AUC", "Detection", "Clean FPR", "Mean noise FPR"],
         s2rows("resnet_representation_cifar10_native32", "ResNet") + s2rows("dinov2_observer_cifar10_native32_stage2", "DINOv2")))
 W("")
 W("The Imagenette pattern repeats: mixtures do not raise held-out AUC, but they often reduce noise false alarms (e.g. ResNet's CW fold).")
 W("")
+W(C32_EXPLANATIONS.representation_bootstrap())
+W("")
 W(f"Sources: {link('ResNet native-32', 'results/resnet_representation_cifar10_native32/')}, {link('DINOv2 native-32', 'results/dinov2_observer_cifar10_native32/')}, "
   f"{link('DINOv2 native-32 Stage 2', 'results/dinov2_observer_cifar10_native32_stage2/')}, {link('ResNet 224', 'results/resnet_representation_cifar10_fixed1000/')}, "
   f"{link('DINOv2 224', 'results/dinov2_observer_cifar10_fixed1000/')}.")
+W("")
+
+W("### 3.6 Completed native-32 explanation experiment")
+W("")
+W(C32_EXPLANATIONS.setup())
+W("")
+W(C32_EXPLANATIONS.explanation())
 W("")
 
 # ---------------- section 4
@@ -331,12 +347,12 @@ W("")
 # ---------------- section 5
 W("## 5. Limitations and next steps")
 W("")
-W("- **Grad-CAM, SLICE and BELIEF have not yet been run on CIFAR-10.** The pipeline supports it (`--stage segment`, `sigma`, `explain`, then the analysis), but the projected cost is ~7 h on the RTX 4060 laptop and likely more on Apple silicon. CW-trained explanation detectors on CIFAR-10 follow in minutes once explanations exist.")
+W("- **Native-32 CIFAR-10 explanations are complete and validated** (§3.6): all 4,282 required records, stability repetitions, fidelity, PGD-trained Stage 1, three-seed matched Stage 2, and CW-trained Stage 1. See the saved validation and execution-environment records for counts and backend details.")
 W("- Stage 1 results are single fitted detectors; Stage 2 uses three allocation seeds. No new cross-pipeline significance tests are claimed.")
 W(f"- CIFAR-10 CW succeeds on only {asr_str(C32_STATS, 'cw')} of eligible test images (vs {asr_str(IN_STATS, 'cw')} on Imagenette), so its CW detection estimates use fewer and possibly easier-to-attack images.")
 W("- Noise panels contain 100 test images per condition; false-alarm estimates are correspondingly coarse (±~9 points at 95%).")
 W("- All attacks are non-adaptive: none optimizes against the detector.")
 W("- Possible extensions: multi-layer (Mahalanobis-style) features for CW; noisy negatives in detector training as a labelled ablation (PLAN.md §5).")
 W("")
-(REPO / "NEW_EXPERIMENTS_REPORT.md").write_text("\n".join(out) + "\n")
+(REPO / "NEW_EXPERIMENTS_REPORT.md").write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
 print("written", len(out), "lines; reproduction cells", n_cells)

@@ -1,0 +1,7 @@
+variant,method,inputs,repeats,sign_agreement,top3_jaccard,spearman,spearman_pairs,zero_map_rate,detector_score_sd,note
+clean,slice,20,5,0.8890427269812569,0.708,0.896626534703676,200,0.0,0.04819479217712271,
+clean,belief,20,5,0.9707842322151534,0.9241666666666667,0.9116494137770128,90,0.55,0.00487018004490778,
+clean,gradcam,20,,1.0,1.0,1.0,,,0.0,deterministic given weights and input
+pgd,slice,18,5,0.9301836261356502,0.8711111111111112,0.5781424239831126,33,0.8,0.036457362409759636,
+pgd,belief,18,5,1.0,1.0,nan,0,1.0,0.0,
+pgd,gradcam,18,,1.0,1.0,1.0,,,0.0,deterministic given weights and input
